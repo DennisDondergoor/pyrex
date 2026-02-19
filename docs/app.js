@@ -303,19 +303,26 @@ const PyRex = (() => {
             showView('view-home');
         });
 
-        // Global: Escape goes back one level
+        // Global keyboard shortcuts
         document.addEventListener('keydown', e => {
-            if (e.key !== 'Escape') return;
             const modal = document.getElementById('modal-reset');
-            if (!modal.classList.contains('hidden')) {
-                modal.classList.add('hidden');
+
+            if (e.key === 'Escape') {
+                if (!modal.classList.contains('hidden')) {
+                    modal.classList.add('hidden');
+                    return;
+                }
+                if (activeView === 'view-challenge') {
+                    renderHome();
+                    showView('view-home');
+                } else if (activeView === 'view-result') {
+                    showChallenge();
+                }
                 return;
             }
-            if (activeView === 'view-challenge') {
-                renderHome();
-                showView('view-home');
-            } else if (activeView === 'view-result') {
-                showChallenge();
+
+            if (e.key === 'Enter' && activeView === 'view-result') {
+                document.getElementById('btn-next').click();
             }
         });
 
