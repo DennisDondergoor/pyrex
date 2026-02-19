@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PyRex — Python Regex Course</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Source+Code+Pro:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div id="app">
+
+        <!-- Header -->
+        <header id="header">
+            <div class="header-content">
+                <div class="header-left">
+                    <button id="btn-back" class="btn-icon" title="Back to levels" style="display:none">
+                        <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                            <path d="M13 4L7 10L13 16" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                    </button>
+                </div>
+                <h1 class="logo">PyRex</h1>
+                <div class="header-right"></div>
+            </div>
+        </header>
+
+        <!-- View: Home -->
+        <section id="view-home" class="view active">
+            <p class="tagline">Learn Python regular expressions, step by step.</p>
+            <div class="level-grid" id="level-grid">
+                <!-- Populated by JS -->
+            </div>
+            <div class="home-footer">
+                <button class="btn-reset" id="btn-reset-progress">Reset progress</button>
+            </div>
+        </section>
+
+        <!-- View: Challenge -->
+        <section id="view-challenge" class="view">
+            <div class="challenge-nav">
+                <div class="challenge-nav-left">
+                    <button id="btn-prev" class="btn-icon" title="Previous challenge" style="display:none">
+                        <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                            <path d="M13 4L7 10L13 16" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                    </button>
+                    <span class="level-tag" id="level-tag">Level 1</span>
+                </div>
+                <span class="challenge-counter" id="challenge-counter">1 / 3</span>
+                <button id="btn-nav-next" class="btn-icon" title="Next challenge" style="display:none">
+                    <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                        <path d="M7 4L13 10L7 16" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                </button>
+            </div>
+
+            <h2 class="challenge-title" id="challenge-title"></h2>
+            <p class="challenge-instruction" id="challenge-instruction"></p>
+
+            <div class="test-string-box" id="test-string-box"></div>
+            <div class="match-count" id="match-count"></div>
+
+            <div class="regex-input-row" id="regex-input-row">
+                <input
+                    type="text"
+                    id="regex-input"
+                    class="regex-input"
+                    autocomplete="off"
+                    autocorrect="off"
+                    autocapitalize="off"
+                    spellcheck="false"
+                    placeholder="type your pattern"
+                >
+            </div>
+            <div class="input-error" id="input-error" style="display:none">Invalid regular expression</div>
+
+            <div class="hint-box" id="hint-box" style="display:none"></div>
+
+            <div class="challenge-actions">
+                <button class="btn btn-secondary" id="btn-hint">Hint</button>
+                <button class="btn btn-primary" id="btn-submit">Submit</button>
+            </div>
+        </section>
+
+        <!-- View: Result -->
+        <section id="view-result" class="view">
+            <div class="result-banner" id="result-banner">
+                <span class="result-icon" id="result-icon"></span>
+                <span id="result-text"></span>
+            </div>
+
+            <div class="test-string-box" id="result-test-box"></div>
+
+            <div id="correct-pattern-box" class="correct-pattern-box" style="display:none">
+                <span class="correct-pattern-label">Correct pattern:</span>
+                <code class="correct-pattern-code" id="correct-pattern-code"></code>
+            </div>
+
+            <div class="explanation-box">
+                <h4>Explanation</h4>
+                <p id="explanation-text"></p>
+            </div>
+
+            <div class="python-box">
+                <div class="python-header">
+                    <span class="python-filename">example.py</span>
+                </div>
+                <pre class="python-code" id="python-code"></pre>
+            </div>
+
+            <div class="result-actions">
+                <button class="btn btn-primary" id="btn-next">Next Challenge</button>
+                <button class="btn btn-secondary" id="btn-back-levels">Back to Levels</button>
+            </div>
+        </section>
+
+        <!-- Modal: Reset Progress -->
+        <div id="modal-reset" class="modal hidden">
+            <div class="modal-content">
+                <h2>Reset all progress?</h2>
+                <p>This will clear all your completed challenges. This cannot be undone.</p>
+                <div class="modal-actions">
+                    <button class="btn btn-secondary" id="btn-reset-cancel">Cancel</button>
+                    <button class="btn btn-danger" id="btn-reset-confirm">Reset</button>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <script src="challenges.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>
