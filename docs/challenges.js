@@ -1,6 +1,7 @@
 // PyRex challenge data
 // Each challenge: id, level, title, instruction, testString, solution (regex pattern string),
-//                 explanation, python (code snippet string), hint
+//                 explanation, hint
+// Note: ids are localStorage keys — do not rename them. Array order sets presentation order.
 
 const CHALLENGES = [
 
@@ -72,12 +73,12 @@ matches = re.findall(r'end', text)
         level: 1,
         title: 'Spaces are literal',
         instruction: "Match the two-word phrase 'hot dog' (including the space).",
-        testString: 'I like hot dog and hot dogs',
+        testString: 'Want a hot dog? I love hot dog!',
         solution: 'hot dog',
         explanation: "A space in a regex pattern matches a literal space in the text. 'hot dog' matches the seven-character sequence h-o-t-space-d-o-g. Regex treats spaces just like any other character — they are not ignored.",
         python: `import re
 
-text = 'I like hot dog and hot dogs'
+text = 'Want a hot dog? I love hot dog!'
 matches = re.findall(r'hot dog', text)
 # → ['hot dog', 'hot dog']`,
         hint: "Type the phrase exactly, including the space between the two words."
@@ -1429,13 +1430,13 @@ matches = re.findall(r'(?<=\\()\\w+(?=\\))', text)
         instruction: "Match the value inside each HTML attribute's double quotes (the text, not the quotes).",
         testString: 'class="hero" id="main" type="header"',
         solution: '(?<==")[^"]+(?=")',
-        explanation: "(?<==') is a lookbehind for the two-character sequence ='\" — the equals sign followed by the opening quote. (?=') is a lookahead for the closing quote. [^']+ matches any characters that are not a quote. Together they extract just the attribute value.",
+        explanation: '(?<==") is a lookbehind for the two-character sequence =" — the equals sign followed by the opening double-quote. (?=") is a lookahead for the closing double-quote. [^"]+ matches any characters that are not a double-quote. Together they extract just the attribute value.',
         python: `import re
 
 text = 'class="hero" id="main" type="header"'
 matches = re.findall(r'(?<==")[^"]+(?=")', text)
 # → ['hero', 'main', 'header']`,
-        hint: "Use (?<==') as a lookbehind (equals-then-quote), [^']+ for content, and (?=') as a lookahead."
+        hint: 'Use (?<==") as a lookbehind (equals-then-double-quote), [^"]+ for content, and (?=") as a lookahead.'
     },
     {
         id: 'la-cons',

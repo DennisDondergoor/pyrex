@@ -222,13 +222,10 @@ const PyRex = (() => {
 
             document.getElementById('challenge-actions').style.display = '';
             document.getElementById('completed-banner').style.display = 'none';
-
-            showView('view-challenge');
-            input.focus();
-            return;
         }
 
         showView('view-challenge');
+        if (!isSolved) input.focus();
     }
 
     function updateHighlight() {

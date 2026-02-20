@@ -5,6 +5,8 @@ This file provides guidance to Claude Code when working with code in this reposi
 ## Quick Reference
 
 - **Local dev**: `python3 -m http.server 8002 -d docs` → http://localhost:8002
+- **Production**: https://dennisdondergoor.github.io/pyrex/
+- **Git repo**: https://github.com/DennisDondergoor/pyrex
 - **No Firebase** — client-side only, localStorage for progress
 
 ## Development
@@ -54,7 +56,6 @@ Single key: `pyrex_progress` — object keyed by challenge `id`, value `{ solved
     testString: 'The cat sat on the mat. That fat cat!',
     solution: 'cat',       // regex pattern string (no slashes, no flags)
     explanation: "...",    // shown in result view
-    python: `import re\n...`,  // multiline code snippet string
     hint: "Type the word exactly as it appears."
 }
 ```
@@ -68,14 +69,19 @@ Single key: `pyrex_progress` — object keyed by challenge `id`, value `{ solved
 3. Verify the `solution` pattern actually produces the expected matches against `testString`
 4. Test locally: start a server, open that level, check the live highlighting and submit
 
+**Important**: challenge `id` values are localStorage keys — never rename them or existing user progress will break. The array order (not the id numbers) determines presentation order within a level.
+
 ## Levels
 
-| Level | Topic | Status |
-|-------|-------|--------|
-| 1 | Literal Matches | 3 challenges |
-| 2 | The Dot | 3 challenges |
-| 3 | Character Classes | 4 challenges |
-| 4 | Quantifiers | 4 challenges |
-| 5 | Anchors | 3 challenges |
-| 6 | Shorthand Classes | 4 challenges |
-| 7-10 | Coming Soon | 0 challenges |
+| Level | Topic |
+|-------|-------|
+| 1 | Literal Matches |
+| 2 | The Dot |
+| 3 | Character Classes |
+| 4 | Quantifiers |
+| 5 | Anchors |
+| 6 | Shorthand Classes |
+| 7 | Groups |
+| 8 | Alternation |
+| 9 | Named Groups |
+| 10 | Lookaheads |
