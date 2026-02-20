@@ -10,6 +10,7 @@ const PyRex = (() => {
     let currentIndex = 0;
     let levelChallenges = [];
     let hintVisible = false;
+    let lastPattern = '';
     let progress = loadProgress();
     let activeView = 'view-home';
 
@@ -257,6 +258,7 @@ const PyRex = (() => {
 
         if (!isValidRegex(pattern)) return;
 
+        lastPattern = pattern;
         const correct = isCorrect(pattern, c.solution, c.testString);
         saveProgress(c.id, correct);
         showResult(correct, c);
@@ -285,11 +287,20 @@ const PyRex = (() => {
         }
 
         document.getElementById('explanation-text').textContent = challenge.explanation;
-        document.getElementById('python-code').textContent = challenge.python;
 
         const isLast = currentIndex === levelChallenges.length - 1;
         document.getElementById('btn-next').textContent =
             isLast ? 'Back to Levels' : 'Next Challenge';
+
+        const tryAgainBtn = document.getElementById('btn-try-again');
+        const nextBtn = document.getElementById('btn-next');
+        if (correct) {
+            tryAgainBtn.style.display = 'none';
+            nextBtn.className = 'btn btn-primary';
+        } else {
+            tryAgainBtn.style.display = '';
+            nextBtn.className = 'btn btn-secondary';
+        }
 
         showView('view-result');
     }
@@ -323,7 +334,12 @@ const PyRex = (() => {
 
             if (e.key === 'Enter') {
                 if (activeView === 'view-result') {
-                    document.getElementById('btn-next').click();
+                    const tryAgainBtn = document.getElementById('btn-try-again');
+                    if (tryAgainBtn.style.display !== 'none') {
+                        tryAgainBtn.click();
+                    } else {
+                        document.getElementById('btn-next').click();
+                    }
                 } else if (activeView === 'view-challenge') {
                     // Only handle here when the input is not focused (input has its own handler)
                     if (document.activeElement !== document.getElementById('regex-input')) {
@@ -337,7 +353,10 @@ const PyRex = (() => {
         // Challenge: live regex highlighting
         document.getElementById('regex-input').addEventListener('input', updateHighlight);
         document.getElementById('regex-input').addEventListener('keydown', e => {
-            if (e.key === 'Enter') submitAnswer();
+            if (e.key === 'Enter') {
+                e.stopPropagation();
+                submitAnswer();
+            }
         });
 
         // Challenge: submit
@@ -367,6 +386,14 @@ const PyRex = (() => {
                 renderHome();
                 showView('view-home');
             }
+        });
+
+        document.getElementById('btn-try-again').addEventListener('click', () => {
+            showChallenge();
+            const input = document.getElementById('regex-input');
+            input.value = lastPattern;
+            input.setSelectionRange(lastPattern.length, lastPattern.length);
+            updateHighlight();
         });
 
         document.getElementById('btn-back-levels').addEventListener('click', () => {

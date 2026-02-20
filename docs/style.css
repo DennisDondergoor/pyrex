@@ -463,33 +463,6 @@ body {
     line-height: 1.65;
 }
 
-.python-box {
-    background: var(--card-bg);
-    border: 1px solid var(--border-color);
-    border-radius: 8px;
-    overflow: hidden;
-    margin-bottom: 28px;
-}
-
-.python-header {
-    padding: 8px 16px;
-    border-bottom: 1px solid var(--border-color);
-}
-
-.python-filename {
-    font-size: 0.75rem;
-    color: #555;
-}
-
-.python-code {
-    padding: 16px 20px;
-    font-size: 0.875rem;
-    line-height: 1.75;
-    color: #ccc;
-    white-space: pre;
-    overflow-x: auto;
-    font-family: inherit;
-}
 
 .result-actions {
     display: flex;
