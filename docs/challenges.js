@@ -152,12 +152,12 @@ matches = re.findall(r'\\(', text)
         level: 2,
         title: 'Wildcard and escape together',
         instruction: "Match each single-letter initial: a letter followed by a period.",
-        testString: 'J.K. Rowling and R.R. Martin wrote famous books.',
+        testString: 'J.K. Rowling and R.R. Martin wrote famous books',
         solution: '.\\.',
         explanation: "This combines both dot concepts: '.' (wildcard) matches the letter, and '\\.' (escaped) matches the literal period. Together they match any one character followed by a real period — capturing initials like J., K., R., R.",
         python: `import re
 
-text = 'J.K. Rowling and R.R. Martin wrote famous books.'
+text = 'J.K. Rowling and R.R. Martin wrote famous books'
 matches = re.findall(r'.\.', text)
 # → ['J.', 'K.', 'R.', 'R.']`,
         hint: "Use a plain dot for the letter, and \\. for the period."
