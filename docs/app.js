@@ -321,8 +321,16 @@ const PyRex = (() => {
                 return;
             }
 
-            if (e.key === 'Enter' && activeView === 'view-result') {
-                document.getElementById('btn-next').click();
+            if (e.key === 'Enter') {
+                if (activeView === 'view-result') {
+                    document.getElementById('btn-next').click();
+                } else if (activeView === 'view-challenge') {
+                    // Only handle here when the input is not focused (input has its own handler)
+                    if (document.activeElement !== document.getElementById('regex-input')) {
+                        e.preventDefault();
+                        submitAnswer();
+                    }
+                }
             }
         });
 
