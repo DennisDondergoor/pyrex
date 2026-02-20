@@ -78,7 +78,7 @@ body {
 .btn-icon {
     background: none;
     border: none;
-    color: #666;
+    color: var(--text-color);
     cursor: pointer;
     padding: 6px;
     border-radius: 6px;
@@ -270,7 +270,7 @@ body {
 
 .challenge-counter {
     font-size: 0.8125rem;
-    color: #555;
+    color: var(--text-color);
 }
 
 .challenge-title {
@@ -387,6 +387,17 @@ body {
     justify-content: space-between;
     align-items: center;
     margin-top: 24px;
+}
+
+.completed-banner {
+    margin-top: 24px;
+    color: var(--success-color);
+    font-size: 0.9375rem;
+    font-weight: 600;
+}
+
+.regex-input:read-only {
+    color: var(--success-color);
 }
 
 /* ===== Result ===== */

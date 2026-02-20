@@ -164,13 +164,15 @@ const PyRex = (() => {
 
     function startLevel(levelNum) {
         currentLevel = levelNum;
-        currentIndex = 0;
         levelChallenges = CHALLENGES.filter(c => c.level === levelNum);
+        const firstUnsolved = levelChallenges.findIndex(c => !progress[c.id] || !progress[c.id].solved);
+        currentIndex = firstUnsolved === -1 ? levelChallenges.length - 1 : firstUnsolved;
         showChallenge();
     }
 
     function showChallenge() {
         const c = levelChallenges[currentIndex];
+        const isSolved = !!(progress[c.id] && progress[c.id].solved);
         hintVisible = false;
 
         document.getElementById('level-tag').textContent = `Level ${currentLevel}`;
@@ -179,34 +181,59 @@ const PyRex = (() => {
         document.getElementById('challenge-title').textContent = c.title;
         document.getElementById('challenge-instruction').textContent = c.instruction;
 
-        document.getElementById('test-string-box').innerHTML = escapeHtml(c.testString);
-        document.getElementById('match-count').textContent = '';
-        document.getElementById('match-count').className = 'match-count';
-
-        const input = document.getElementById('regex-input');
-        input.value = '';
-
-        const inputRow = document.getElementById('regex-input-row');
-        inputRow.classList.remove('has-error');
-
-        document.getElementById('input-error').style.display = 'none';
-
-        const hintBox = document.getElementById('hint-box');
-        hintBox.style.display = 'none';
-        hintBox.textContent = c.hint || '';
-
         // Prev / next nav arrows
         document.getElementById('btn-prev').style.display =
             currentIndex > 0 ? '' : 'none';
         document.getElementById('btn-nav-next').style.display =
             currentIndex < levelChallenges.length - 1 ? '' : 'none';
 
+        const input = document.getElementById('regex-input');
+        const inputRow = document.getElementById('regex-input-row');
+        const matchCountEl = document.getElementById('match-count');
+        const hintBox = document.getElementById('hint-box');
+
+        // Always reset error and hint state
+        inputRow.classList.remove('has-error');
+        document.getElementById('input-error').style.display = 'none';
+        hintBox.style.display = 'none';
+        hintBox.textContent = c.hint || '';
+
+        if (isSolved) {
+            // Show completed state: green highlights, solution in input
+            document.getElementById('test-string-box').innerHTML =
+                renderHighlights(c.testString, c.solution, 'match-correct');
+            input.value = c.solution;
+            input.readOnly = true;
+
+            const matches = getMatches(c.solution, c.testString);
+            const word = matches && matches.length === 1 ? 'match' : 'matches';
+            matchCountEl.textContent = matches ? `${matches.length} ${word}` : '';
+            matchCountEl.className = 'match-count has-matches';
+
+            document.getElementById('challenge-actions').style.display = 'none';
+            document.getElementById('completed-banner').style.display = '';
+        } else {
+            // Show normal unsolved state
+            document.getElementById('test-string-box').innerHTML = escapeHtml(c.testString);
+            input.value = '';
+            input.readOnly = false;
+            matchCountEl.textContent = '';
+            matchCountEl.className = 'match-count';
+
+            document.getElementById('challenge-actions').style.display = '';
+            document.getElementById('completed-banner').style.display = 'none';
+
+            showView('view-challenge');
+            input.focus();
+            return;
+        }
+
         showView('view-challenge');
-        input.focus();
     }
 
     function updateHighlight() {
         const c = levelChallenges[currentIndex];
+        if (progress[c.id] && progress[c.id].solved) return;
         const pattern = document.getElementById('regex-input').value;
         const testBox = document.getElementById('test-string-box');
         const matchCountEl = document.getElementById('match-count');
@@ -249,6 +276,7 @@ const PyRex = (() => {
 
     function submitAnswer() {
         const c = levelChallenges[currentIndex];
+        if (progress[c.id] && progress[c.id].solved) return;
         const pattern = document.getElementById('regex-input').value.trim();
 
         if (!pattern) {
@@ -276,15 +304,11 @@ const PyRex = (() => {
         document.getElementById('result-test-box').innerHTML =
             renderHighlights(challenge.testString, challenge.solution, 'match-correct');
 
-        // Show correct pattern only when wrong
+        // Always show the pattern
         const correctBox = document.getElementById('correct-pattern-box');
-        if (correct) {
-            correctBox.style.display = 'none';
-        } else {
-            correctBox.style.display = '';
-            document.getElementById('correct-pattern-code').textContent =
-                `/${challenge.solution}/g`;
-        }
+        correctBox.style.display = '';
+        document.getElementById('correct-pattern-code').textContent =
+            challenge.solution;
 
         document.getElementById('explanation-text').textContent = challenge.explanation;
 
