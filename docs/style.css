@@ -371,6 +371,47 @@ body {
     margin-bottom: 14px;
 }
 
+.char-picker {
+    display: flex;
+    gap: 5px;
+    overflow-x: auto;
+    padding-bottom: 4px;
+    margin-bottom: 10px;
+    scrollbar-width: none;
+}
+
+.char-picker::-webkit-scrollbar {
+    display: none;
+}
+
+.char-btn {
+    flex-shrink: 0;
+    background: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    color: var(--text-color);
+    font-family: inherit;
+    font-size: 0.875rem;
+    padding: 6px 10px;
+    cursor: pointer;
+    user-select: none;
+    -webkit-user-select: none;
+    touch-action: manipulation;
+    transition: border-color 0.15s;
+}
+
+.char-btn:hover {
+    border-color: #555;
+}
+
+.char-btn:active {
+    transform: scale(0.95);
+}
+
+.char-btn-shorthand {
+    color: var(--accent-color);
+}
+
 .hint-box {
     background: rgba(74, 158, 255, 0.06);
     border: 1px solid rgba(74, 158, 255, 0.18);

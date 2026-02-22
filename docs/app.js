@@ -211,6 +211,7 @@ const PyRex = (() => {
             matchCountEl.className = 'match-count has-matches';
 
             document.getElementById('challenge-actions').style.display = 'none';
+            document.getElementById('char-picker').style.display = 'none';
             document.getElementById('completed-banner').style.display = '';
         } else {
             // Show normal unsolved state
@@ -221,6 +222,7 @@ const PyRex = (() => {
             matchCountEl.className = 'match-count';
 
             document.getElementById('challenge-actions').style.display = '';
+            document.getElementById('char-picker').style.display = '';
             document.getElementById('completed-banner').style.display = 'none';
         }
 
@@ -382,6 +384,21 @@ const PyRex = (() => {
 
         // Challenge: submit
         document.getElementById('btn-submit').addEventListener('click', submitAnswer);
+
+        // Character picker: insert at cursor
+        document.getElementById('char-picker').addEventListener('click', e => {
+            const btn = e.target.closest('.char-btn');
+            if (!btn) return;
+            const input = document.getElementById('regex-input');
+            if (input.readOnly) return;
+            const char = btn.dataset.char;
+            const start = input.selectionStart;
+            const end = input.selectionEnd;
+            input.value = input.value.slice(0, start) + char + input.value.slice(end);
+            input.setSelectionRange(start + char.length, start + char.length);
+            input.focus();
+            updateHighlight();
+        });
 
         // Challenge: hint toggle
         document.getElementById('btn-hint').addEventListener('click', () => {

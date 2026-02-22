@@ -68,8 +68,7 @@ Single key: `pyrex_progress` — object keyed by challenge `id`, value `{ solved
     testString: 'The cat sat on the mat. That fat cat!',
     solution: 'cat',       // regex pattern string (no slashes, no flags)
     explanation: "...",    // shown in result view
-    hint: "Type the word exactly as it appears.",
-    python: 're.findall(r"cat", text)'  // optional — not currently rendered in UI
+    hint: "Type the word exactly as it appears."
 }
 ```
 
