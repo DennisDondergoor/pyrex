@@ -402,6 +402,36 @@ const CHALLENGES = [
         explanation: "Greedy '.*' would match from the first quote all the way to the very last, swallowing both strings as one giant match. Lazy '.*?' stops at the earliest possible closing quote, keeping each quoted string as a separate match. '?' after '*' makes the star lazy.",
         hint: "Surround .*? with quote characters — the ? after * makes the star lazy."
     },
+    {
+        id: 'quant-ng-1',
+        level: 4,
+        title: 'Lazy match: C-style comments',
+        instruction: "Match each C-style comment independently.",
+        testString: 'x = 1; /* init */ y = 2; /* done */',
+        solution: '/\\*.*?\\*/',
+        explanation: "Greedy '.*' would stretch from the first '/*' all the way to the last '*/', swallowing the code in between. Lazy '.*?' stops as soon as it finds the nearest '*/', keeping each comment as a separate match. The '/*' and '*/' delimiters are escaped with '\\' because '*' is a regex metacharacter.",
+        hint: "Escape the * in the delimiters with \\, then use .*? for the content."
+    },
+    {
+        id: 'quant-ng-2',
+        level: 4,
+        title: 'Lazy match: markdown bold',
+        instruction: "Match each **bold** section including the surrounding asterisks.",
+        testString: '**hello** and **world** today',
+        solution: '\\*\\*.*?\\*\\*',
+        explanation: "Greedy '\\*\\*.*\\*\\*' would match from the first '**' to the very last '**', treating 'hello** and **world' as the content. Lazy '.*?' stops at the nearest '**', so each bold section is matched independently.",
+        hint: "Escape each * with \\, and use .*? between the double-asterisk delimiters."
+    },
+    {
+        id: 'quant-ng-con',
+        level: 4,
+        title: 'Lazy match: bracketed items',
+        instruction: "Match each square-bracketed item individually.",
+        testString: '[first] {second} [third]',
+        solution: '\\[.+?\\]',
+        explanation: "Greedy '\\[.+\\]' would match from the first '[' to the last ']', swallowing '{second}' in the middle — resulting in one long match. Lazy '\\[.+?\\]' stops at the first ']' it finds, matching '[first]' and '[third]' as separate results and ignoring the curly-braced item.",
+        hint: "Escape [ and ] with \\, then use .+? for the content."
+    },
 
     // ─── Level 5: Anchors ──────────────────────────────────────────────────────
 
@@ -683,6 +713,46 @@ const CHALLENGES = [
         solution: '(\\w+) \\1',
         explanation: "Parentheses without ?: create a capturing group. \\1 is a back-reference that matches the exact same text as group 1 captured. So (\\w+) \\1 finds 'the the' and 'cat cat'. 'sat' and 'once' appear only once and are skipped.",
         hint: "Use (\\w+) to capture a word, then \\1 to match the exact same word again."
+    },
+    {
+        id: 'grp-br-1',
+        level: 7,
+        title: 'Back-reference: adjacent duplicates',
+        instruction: "Match each pair of identical adjacent letters.",
+        testString: 'butter coffee letter',
+        solution: '([a-z])\\1',
+        explanation: "([a-z]) captures any lowercase letter. \\1 is a back-reference that must match the exact same character captured by group 1. Together they find any letter that repeats immediately — 'tt' in butter, 'ff' in coffee, 'tt' in letter.",
+        hint: "Capture one letter in a group with ([a-z]), then use \\1 to match it again."
+    },
+    {
+        id: 'grp-br-2',
+        level: 7,
+        title: 'Back-reference: matching quote pairs',
+        instruction: "Match correctly quoted strings — the opening and closing quote must be the same character.",
+        testString: "'hello' \"world\" 'mismatched\"",
+        solution: "(['\"])\\w+\\1",
+        explanation: "(['\"]) captures either a single or double quote into group 1. \\w+ matches the word inside. \\1 requires the closing character to be the exact same quote that opened the string. 'mismatched\" uses different quotes so the back-reference fails and it is skipped.",
+        hint: "Use (['\"]) to capture the opening quote, \\w+ for the content, and \\1 to close with the same quote."
+    },
+    {
+        id: 'grp-br-3',
+        level: 7,
+        title: 'Back-reference: two groups (AABB)',
+        instruction: "Match four-letter sequences where the first two letters are identical and the last two letters are identical (e.g. 'aabb').",
+        testString: 'aabb ccdd eefg hhii',
+        solution: '([a-z])\\1([a-z])\\2',
+        explanation: "Group 1 captures the first letter; \\1 requires the second letter to match it. Group 2 captures the third letter; \\2 requires the fourth letter to match it. 'eefg' fails because 'f' ≠ 'g', so \\2 does not match.",
+        hint: "Use two separate capturing groups, each followed by its back-reference: \\1 for group 1, \\2 for group 2."
+    },
+    {
+        id: 'grp-br-con',
+        level: 7,
+        title: 'Back-reference: matching HTML tags',
+        instruction: "Match each properly paired HTML element — the closing tag must use the same tag name as the opening tag.",
+        testString: '<h1>Title</h1> <p>Text</p> <h1>Wrong</p>',
+        solution: '<(\\w+)>[^<]+</\\1>',
+        explanation: "(\\w+) captures the tag name from the opening tag. [^<]+ matches the content (any characters except '<'). </\\1> requires the closing tag to use the exact same name. The mismatched '<h1>Wrong</p>' is skipped because \\1 captured 'h1' but the closing tag says 'p'.",
+        hint: "Capture the tag name with (\\w+), match the content with [^<]+, then use </\\1> to close."
     },
     {
         id: 'grp-cons',
