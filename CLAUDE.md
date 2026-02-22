@@ -29,17 +29,29 @@ Single-page app with view toggling (`active` class on `<section>` elements). All
 
 ## Key Flows
 
-**Home → Challenge:** Click a level card → `startLevel(n)` filters challenges by level, sets `currentIndex = 0`, calls `showChallenge()`.
+**Home → Challenge:** Click a level card → `startLevel(n)` filters challenges by level, sets `currentIndex` to the first unsolved challenge (or last if all solved), calls `showChallenge()`.
 
 **Challenge → Result:** User types pattern in `/…/g` input, live highlights update on `input` event. Submit compares user's matches (value + index) against solution's matches. Calls `showResult(correct, challenge)`.
 
 **Result → Next:** "Next Challenge" increments `currentIndex` and calls `showChallenge()`. On last challenge, goes back to home.
 
+## Keyboard Shortcuts
+
+| Key | Context | Action |
+|-----|---------|--------|
+| `Enter` | Challenge input | Submit answer |
+| `Enter` | Result (wrong) | Try Again |
+| `Enter` | Result (correct) | Next Challenge / Back to Levels |
+| `Escape` | Challenge | Back to home |
+| `Escape` | Result | Back to challenge |
+| `Escape` | Reset modal | Close modal |
+
 ## Regex Matching Logic
 
 - Both user pattern and solution pattern run with `/g` flag via `new RegExp(pattern, 'g')`
 - Match comparison: same count, same `value` and `index` for every match (order-sensitive)
-- Invalid regex: input border turns red, error label shown, submit blocked
+- Invalid regex: `has-error` class on input row, error label shown, submit blocked
+- Zero-length match guard: `lastIndex` is incremented and a safety cap of 500 iterations prevents infinite loops
 
 ## localStorage
 
@@ -56,7 +68,8 @@ Single key: `pyrex_progress` — object keyed by challenge `id`, value `{ solved
     testString: 'The cat sat on the mat. That fat cat!',
     solution: 'cat',       // regex pattern string (no slashes, no flags)
     explanation: "...",    // shown in result view
-    hint: "Type the word exactly as it appears."
+    hint: "Type the word exactly as it appears.",
+    python: 're.findall(r"cat", text)'  // optional — not currently rendered in UI
 }
 ```
 
