@@ -245,7 +245,6 @@ const PyRex = (() => {
         }
 
         showView('view-challenge');
-        if (!isSolved) input.focus();
     }
 
     function showConceptScreen() {
@@ -466,6 +465,11 @@ const PyRex = (() => {
         // Challenge: submit
         document.getElementById('btn-submit').addEventListener('click', submitAnswer);
 
+        // Character picker: prevent buttons from stealing focus from the input
+        document.getElementById('char-picker').addEventListener('mousedown', e => {
+            if (e.target.closest('.char-btn')) e.preventDefault();
+        });
+
         // Character picker: insert at cursor
         document.getElementById('char-picker').addEventListener('click', e => {
             const btn = e.target.closest('.char-btn');
@@ -520,7 +524,7 @@ const PyRex = (() => {
             input.value = lastPattern;
             input.setSelectionRange(lastPattern.length, lastPattern.length);
             updateHighlight();
-            input.focus();
+            requestAnimationFrame(() => input.focus());
         });
 
         document.getElementById('btn-back-levels').addEventListener('click', () => {

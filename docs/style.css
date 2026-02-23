@@ -37,6 +37,7 @@ body {
     font-family: 'Source Code Pro', monospace;
     line-height: 1.6;
     min-height: 100vh;
+    min-height: 100dvh;
 }
 
 /* ===== Header ===== */
@@ -147,7 +148,7 @@ body {
     display: none;
     max-width: var(--max-width);
     margin: 0 auto;
-    padding: 32px 24px 48px;
+    padding: 32px 24px calc(48px + env(safe-area-inset-bottom, 0px));
 }
 
 .view.active {
@@ -554,7 +555,8 @@ body {
 
 .result-actions {
     display: flex;
-    justify-content: space-between;
+    justify-content: flex-end;
+    gap: 12px;
 }
 
 /* ===== Modal ===== */
@@ -612,7 +614,7 @@ body {
     }
 
     .view {
-        padding: 24px 16px 40px;
+        padding: 24px 16px calc(40px + env(safe-area-inset-bottom, 0px));
     }
 
     .header-content {
