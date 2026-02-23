@@ -374,12 +374,28 @@ body {
     margin-bottom: 14px;
 }
 
+.char-picker-wrap {
+    position: relative;
+    margin-bottom: 10px;
+}
+
+.char-picker-wrap::after {
+    content: '';
+    position: absolute;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    width: 36px;
+    background: linear-gradient(to right, transparent, var(--bg-color));
+    pointer-events: none;
+}
+
 .char-picker {
     display: flex;
     gap: 5px;
     overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
     padding-bottom: 4px;
-    margin-bottom: 10px;
     scrollbar-width: none;
 }
 
@@ -395,7 +411,7 @@ body {
     color: var(--text-color);
     font-family: inherit;
     font-size: 1.25rem;
-    padding: 6px 10px;
+    padding: 10px 12px;
     cursor: pointer;
     user-select: none;
     -webkit-user-select: none;
@@ -593,10 +609,6 @@ body {
 @media (max-width: 480px) {
     .level-grid {
         grid-template-columns: 1fr;
-    }
-
-    .result-actions {
-        flex-direction: column;
     }
 
     .view {
