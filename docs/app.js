@@ -164,6 +164,7 @@ const PyRex = (() => {
 
     function startLevel(levelNum) {
         currentLevel = levelNum;
+        lastPattern = '';
         levelChallenges = CHALLENGES.filter(c => c.level === levelNum);
         const firstUnsolved = levelChallenges.findIndex(c => !progress[c.id] || !progress[c.id].solved);
         const hasProgress = levelChallenges.some(c => progress[c.id]);
@@ -508,6 +509,7 @@ const PyRex = (() => {
             input.value = lastPattern;
             input.setSelectionRange(lastPattern.length, lastPattern.length);
             updateHighlight();
+            input.focus();
         });
 
         document.getElementById('btn-back-levels').addEventListener('click', () => {
