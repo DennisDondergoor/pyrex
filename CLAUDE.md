@@ -24,12 +24,12 @@ Single-page app with view toggling (`active` class on `<section>` elements). All
 
 - **index.html** — Views: home (level grid), challenge, result. Confirmation modal for reset.
 - **style.css** — All styles. Same CSS variables as PyLens: `#000` bg, `#111` cards, `#333` borders, `#4a9eff` accent, Source Code Pro font.
-- **challenges.js** — `CHALLENGES` array (global). Each object: `id`, `level`, `title`, `instruction`, `testString`, `solution` (regex pattern string), `explanation`, `python` (code snippet), `hint`.
+- **challenges.js** — `LEVEL_CONCEPTS` object (keyed 1–10, multi-paragraph strings shown on the concept intro screen). `CHALLENGES` array (global). Each object: `id`, `level`, `title`, `instruction`, `testString`, `solution` (regex pattern string), `explanation`, `hint`.
 - **app.js** — IIFE module. Handles view routing, regex matching, live highlights, progress storage.
 
 ## Key Flows
 
-**Home → Challenge:** Click a level card → `startLevel(n)` filters challenges by level, sets `currentIndex` to the first unsolved challenge (or last if all solved), calls `showChallenge()`.
+**Home → Challenge:** Click a level card → `startLevel(n)` filters challenges by level. On first visit (no progress) sets `currentIndex = -1` and shows the concept intro screen (`showConceptScreen()`). On return visits, jumps to the first unsolved challenge (or last if all solved).
 
 **Challenge → Result:** User types pattern in `/…/g` input, live highlights update on `input` event. Submit compares user's matches (value + index) against solution's matches. Calls `showResult(correct, challenge)`.
 

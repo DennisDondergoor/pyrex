@@ -365,11 +365,11 @@ const PyRex = (() => {
         if (correct) {
             tryAgainBtn.style.display = 'none';
             nextBtn.className = 'btn btn-primary';
-            backBtn.style.display = isLast ? 'none' : '';
+            backBtn.style.display = 'none';
         } else {
             tryAgainBtn.style.display = '';
             nextBtn.className = 'btn btn-secondary';
-            backBtn.style.display = '';
+            backBtn.style.display = 'none';
         }
 
         showView('view-result');

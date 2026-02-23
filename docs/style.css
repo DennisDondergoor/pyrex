@@ -532,12 +532,7 @@ body {
 
 .result-actions {
     display: flex;
-    gap: 12px;
-}
-
-.result-actions .btn {
-    flex: 1;
-    text-align: center;
+    justify-content: space-between;
 }
 
 /* ===== Modal ===== */
