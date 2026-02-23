@@ -191,12 +191,22 @@ const PyRex = (() => {
         const inputRow = document.getElementById('regex-input-row');
         const matchCountEl = document.getElementById('match-count');
         const hintBox = document.getElementById('hint-box');
+        const conceptBox = document.getElementById('concept-box');
+        const conceptText = document.getElementById('concept-text');
 
         // Always reset error and hint state
         inputRow.classList.remove('has-error');
         document.getElementById('input-error').style.display = 'none';
         hintBox.style.display = 'none';
         hintBox.textContent = c.hint || '';
+
+        // Show concept intro automatically for unsolved challenges that introduce a new concept
+        if (c.concept && !isSolved) {
+            conceptText.textContent = c.concept;
+            conceptBox.style.display = '';
+        } else {
+            conceptBox.style.display = 'none';
+        }
 
         if (isSolved) {
             // Show completed state: green highlights, solution in input
