@@ -3,6 +3,76 @@
 //                 explanation, hint
 // Note: ids are localStorage keys — do not rename them. Array order sets presentation order.
 
+// ─── Level concept introductions (shown before challenge 1 of each level) ────
+
+const LEVEL_CONCEPTS = {
+
+    1: `A regex (regular expression) is a pattern that describes text to search for. In its simplest form, the pattern is just the text you want to find — plain characters match themselves literally. The pattern cat finds every c-a-t sequence wherever it appears in the string.
+
+Regex is case-sensitive by default: Cat and CAT would not match the pattern cat.
+
+A match can occur anywhere inside a string, not just at whole-word boundaries — the pattern end matches inside 'blended', 'trending', and 'blend' as well. Spaces and punctuation are matched literally too: hot dog (with a space) finds that exact two-word phrase.`,
+
+    2: `The dot . is a wildcard that matches any single character at that position, except a newline. So c.t matches cat, cut, cot, c9t, and even c t — anything with c and t one character apart.
+
+Many characters have special meaning in regex. To match them literally, escape them with a backslash — it strips the special meaning. A backslash before . gives \\. which matches a real period; \\( matches a real parenthesis; \\? matches a real question mark.
+
+Characters that need escaping: . * + ? | ^ $ \\ ( ) [ ] { }`,
+
+    3: `Square brackets define a character class — a set of characters where exactly one may match at that position. [aeiou] matches any single vowel; [abc] matches a, b, or c.
+
+Use a hyphen inside brackets to define a range: [a-z] matches any lowercase letter, [A-Z] any uppercase letter, [0-9] any digit. Ranges can be combined in one class: [a-zA-Z] matches any letter of either case.
+
+A caret ^ immediately after the opening bracket negates the class: [^0-9] matches any character that is NOT a digit. Note: inside square brackets the dot . loses its wildcard meaning and matches a literal period.`,
+
+    4: `Quantifiers control how many times the preceding element — a character, class, or group — may repeat.
+
+The three most common: + means one or more, * means zero or more, ? means zero or one (optional). Curly braces give precise counts: {3} means exactly 3, {3,} means 3 or more, {2,5} means between 2 and 5.
+
+By default, quantifiers are greedy — they match as many characters as possible. Adding ? after a quantifier makes it lazy: it matches as few as possible and stops at the earliest opportunity. +? and *? are the lazy versions of + and *.`,
+
+    5: `Anchors match positions in the string, not characters — they consume no text. ^ asserts that the match starts at the very beginning of the string; $ asserts it ends at the very end.
+
+\\b matches a word boundary: the position between a word character (letter, digit, or underscore) and a non-word character (space, punctuation, or start/end of string). Wrapping a word with \\b on both sides — \\bword\\b — ensures it only matches as a standalone word and not inside a longer one.
+
+\\B is the opposite of \\b: it matches a position that is NOT a word boundary, so it only succeeds when you are inside a word.`,
+
+    6: `Shorthand classes are compact aliases for common character sets.
+
+\\d matches any digit — the same as [0-9]. \\w matches any word character (letter, digit, or underscore) — the same as [a-zA-Z0-9_]. \\s matches any whitespace character: space, tab, or newline.
+
+Each has an uppercase negated version: \\D matches anything that is NOT a digit, \\W anything that is NOT a word character, \\S anything that is NOT whitespace.
+
+Shorthands combine freely with quantifiers: \\d+ matches one or more consecutive digits as a single token, \\w+ matches a whole word, \\s+ matches a run of whitespace.`,
+
+    7: `Parentheses create groups, which serve two purposes.
+
+First, grouping: they let you apply a quantifier to a whole sequence rather than just one character. (?:ha)+ repeats the two-character sequence ha as one unit. The ?: prefix makes it a non-capturing group — use this when you only need grouping for repetition or alternation.
+
+Second, capturing: a group without ?: stores its matched text. The first capturing group is referenced as \\1, the second as \\2, and so on. A backreference reuses the exact text that was captured — not just the same pattern, but the same characters. For example, (\\w+) \\1 finds any word followed by that exact same word again.`,
+
+    8: `The pipe | means OR — the pattern matches either the expression on its left or the one on its right. cat|dog matches 'cat' or 'dog' wherever they appear. You can chain as many alternatives as needed: Mon|Tue|Wed|Thu.
+
+The engine tests alternatives left to right at each position and takes the first one that succeeds.
+
+Without grouping, | splits the entire pattern: gra|ey means 'gra' or 'ey' — two unrelated patterns. Wrap alternatives in a non-capturing group to scope them: gr(?:a|e)y means 'gray' or 'grey'.
+
+When alternatives overlap — one being a prefix of another — put the longer one first: colour|col, not col|colour.`,
+
+    9: `Named groups are capturing groups with a label instead of a number. In this app (JavaScript regex) the syntax is (?<name>...) — for example, (?<year>\\d{4}) captures four digits under the name 'year'. Named groups behave exactly like numbered capturing groups but make patterns far easier to read.
+
+You can reference a named group later with \\k<name> — a named backreference that requires the exact same text as what was captured. Multiple named groups work independently in the same pattern.
+
+Note: Python's re module uses a slightly different syntax — (?P<name>...) to define and (?P=name) to reference — but the concept is identical.`,
+
+    10: `Lookaheads and lookbehinds are zero-width assertions — they check what is around the current position without consuming any characters, so they never appear in the match itself.
+
+(?=X) is a positive lookahead: succeeds only if X immediately follows. (?!X) is a negative lookahead: succeeds only if X does NOT follow. (?<=X) is a positive lookbehind: succeeds only if X immediately precedes. (?<!X) is a negative lookbehind: succeeds only if X does NOT precede.
+
+For example, \\w+(?=:) matches a word only when a colon follows — the colon is checked but not included in the match. Lookaheads and lookbehinds can be combined to filter both sides of a match at once.`,
+
+};
+
 const CHALLENGES = [
 
     // ─── Level 1: Literal Matches ──────────────────────────────────────────────
@@ -15,8 +85,7 @@ const CHALLENGES = [
         testString: 'The cat sat on the mat. That fat cat!',
         solution: 'cat',
         explanation: "The pattern 'cat' matches the exact sequence of characters c, a, t — wherever it appears in the string. Regex is case-sensitive by default, so 'Cat' would not match.",
-        hint: "Type the word exactly as it appears in the text.",
-        concept: "In regex, plain characters match themselves literally. The pattern cat matches exactly c followed by a followed by t — wherever that sequence appears in the string. Regex is case-sensitive by default, so Cat and CAT would not match cat."
+        hint: "Type the word exactly as it appears in the text."
     },
     {
         id: 'lit-2',
@@ -90,8 +159,7 @@ const CHALLENGES = [
         testString: 'The cat cut the cot. A bat sat on a cot.',
         solution: 'c.t',
         explanation: "The dot (.) matches any single character except a newline. 'c.t' matches cat (c-a-t), cut (c-u-t), and cot (c-o-t) — any character is allowed between c and t.",
-        hint: "The dot is a special character meaning 'any one character'.",
-        concept: "The dot . is a wildcard that matches any single character except a newline. Use it wherever you want to allow any character at that position. To match a literal period, escape it with a backslash: \\."
+        hint: "The dot is a special character meaning 'any one character'."
     },
     {
         id: 'dot-2',
@@ -176,8 +244,7 @@ const CHALLENGES = [
         testString: 'Hello World',
         solution: '[aeiou]',
         explanation: "Square brackets define a character class — a set of allowed characters. '[aeiou]' matches any one of those five vowels. It matches 'e' (Hello) and 'o' (Hello) and 'o' (World).",
-        hint: "Put all the vowels inside square brackets: [...]",
-        concept: "Square brackets define a character class — a set of characters where any one may match. [abc] matches a, b, or c. Use ranges like [a-z] for any lowercase letter. Combine ranges like [a-zA-Z], or negate with [^...] to match anything NOT in the set."
+        hint: "Put all the vowels inside square brackets: [...]"
     },
     {
         id: 'cc-2',
@@ -281,8 +348,7 @@ const CHALLENGES = [
         testString: 'I have 3 cats, 12 dogs, and 100 fish.',
         solution: '[0-9]+',
         explanation: "The + quantifier means 'one or more of the preceding element'. '[0-9]+' matches a sequence of digits as a single unit — so 12 is one match, not two separate digit matches.",
-        hint: "Put a + after the character class to match one or more digits.",
-        concept: "Quantifiers control how many times the preceding element may repeat. + means one or more, * means zero or more, ? means zero or one (optional). Curly braces give exact counts: {3} matches exactly 3, {2,5} matches between 2 and 5. By default, quantifiers are greedy — they match as much as possible."
+        hint: "Put a + after the character class to match one or more digits."
     },
     {
         id: 'quant-extra-plus',
@@ -447,8 +513,7 @@ const CHALLENGES = [
         testString: 'Hello, World! Hello again.',
         solution: '^Hello',
         explanation: "'^' anchors the pattern to the start of the string. '^Hello' matches the first 'Hello' only. The second 'Hello' (at position 14) is not at the start, so it is skipped.",
-        hint: "Put ^ before the word to anchor it to the start of the string.",
-        concept: "Anchors match positions in the string, not characters. ^ anchors to the start of the string, $ anchors to the end. \\b matches a word boundary — the invisible edge between a word character and a non-word character. Anchors consume no characters; they simply assert where in the string a match may occur."
+        hint: "Put ^ before the word to anchor it to the start of the string."
     },
     {
         id: 'anc-3',
@@ -563,8 +628,7 @@ const CHALLENGES = [
         testString: 'Phone: (555) 867-5309, ext. 42',
         solution: '\\d',
         explanation: "'\\d' is shorthand for '[0-9]' — it matches any single digit. It is shorter to write and conveys intent clearly. It finds all 12 digit characters in the phone number.",
-        hint: "Use \\d to match a single digit.",
-        concept: "Shorthand classes are compact aliases for common character sets. \\d matches any digit (same as [0-9]). \\w matches any word character — letter, digit, or underscore. \\s matches any whitespace character. Each has an uppercase negated version: \\D, \\W, and \\S match everything the lowercase version does not."
+        hint: "Use \\d to match a single digit."
     },
     {
         id: 'short-2',
@@ -678,8 +742,7 @@ const CHALLENGES = [
         testString: 'ha haha hahaha wow',
         solution: '(?:ha)+',
         explanation: "Parentheses group characters into a single unit so quantifiers can apply to the whole group. (?:ha)+ treats 'ha' as one element and matches it one or more times in a row. The ?: prefix makes it a non-capturing group, which is the standard choice when you only need grouping for repetition.",
-        hint: "Wrap 'ha' in (?:...) to treat it as a single unit, then add +.",
-        concept: "Parentheses group elements so quantifiers can apply to a whole sequence, not just one character. (?:ab)+ repeats the pair 'ab' as a single unit. The ?: prefix makes it a non-capturing group — use this when you only need grouping. Without ?:, the group captures its matched text, which you can reference later with \\1, \\2, and so on."
+        hint: "Wrap 'ha' in (?:...) to treat it as a single unit, then add +."
     },
     {
         id: 'grp-2',
@@ -802,8 +865,7 @@ const CHALLENGES = [
         testString: 'I have a cat and a dog. The cat sleeps.',
         solution: 'cat|dog',
         explanation: "The pipe character | means 'or'. 'cat|dog' matches wherever 'cat' appears and wherever 'dog' appears. The engine tries the left alternative first; if that fails at the current position it tries the right one.",
-        hint: "Separate the two options with a pipe character |.",
-        concept: "The pipe | means OR — it matches either the pattern on its left or the one on its right. The engine tests alternatives left to right and takes the first match at each position. Use a non-capturing group to scope alternation: gr(?:a|e)y matches 'gray' or 'grey', while gra|ey would mean 'gra' or 'ey' — two completely separate patterns."
+        hint: "Separate the two options with a pipe character |."
     },
     {
         id: 'alt-2',
@@ -906,8 +968,7 @@ const CHALLENGES = [
         testString: 'Born in 1990, graduated in 2015, retiring in 2055',
         solution: '(?<year>\\d{4})',
         explanation: "In JavaScript regex, (?<name>...) creates a named capturing group. In Python the syntax is (?P<name>...). The name documents what the group captures and lets you access it by name rather than by index — useful when patterns grow complex.",
-        hint: "Wrap \\d{4} in (?<year>...) — note the angle brackets around the name.",
-        concept: "Named groups label what a capturing group matches. In JavaScript the syntax is (?<name>...), in Python it is (?P<name>...). You can reference a named group later with \\k<name> (JavaScript) or (?P=name) (Python). Named groups make complex patterns self-documenting — (?<year>\\d{4}) is far clearer than just (\\d{4})."
+        hint: "Wrap \\d{4} in (?<year>...) — note the angle brackets around the name."
     },
     {
         id: 'ng-2',
@@ -990,8 +1051,7 @@ const CHALLENGES = [
         testString: 'name: Alice age: 30 city Paris',
         solution: '\\w+(?=:)',
         explanation: "(?=...) is a positive lookahead — it asserts that the pattern inside must follow the current position, but does not consume any characters. \\w+(?=:) matches a word only when ':' comes right after. 'city' and 'Alice' are not followed by ':' and are skipped.",
-        hint: "Add (?=:) at the end of \\w+ — a zero-width assertion that colon follows.",
-        concept: "Lookaheads and lookbehinds are zero-width assertions — they check what surrounds the current position without consuming any characters. (?=...) is a positive lookahead (what follows must match), (?!...) is negative (must NOT match). (?<=...) looks behind (what precedes must match), (?<!...) is its negation. Only the main pattern, not the lookaround, appears in the match."
+        hint: "Add (?=:) at the end of \\w+ — a zero-width assertion that colon follows."
     },
     {
         id: 'la-2',

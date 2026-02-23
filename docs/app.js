@@ -7,7 +7,7 @@ const PyRex = (() => {
     // ─── State ────────────────────────────────────────────────────────────────
 
     let currentLevel = null;
-    let currentIndex = 0;
+    let currentIndex = 0;   // -1 = concept intro screen, 0+ = challenges
     let levelChallenges = [];
     let hintVisible = false;
     let lastPattern = '';
@@ -166,11 +166,24 @@ const PyRex = (() => {
         currentLevel = levelNum;
         levelChallenges = CHALLENGES.filter(c => c.level === levelNum);
         const firstUnsolved = levelChallenges.findIndex(c => !progress[c.id] || !progress[c.id].solved);
-        currentIndex = firstUnsolved === -1 ? levelChallenges.length - 1 : firstUnsolved;
+        const hasProgress = levelChallenges.some(c => progress[c.id]);
+
+        if (hasProgress) {
+            // Return visit: skip intro, land on first unsolved (or last if all done)
+            currentIndex = firstUnsolved === -1 ? levelChallenges.length - 1 : firstUnsolved;
+        } else {
+            // First visit: show concept intro
+            currentIndex = -1;
+        }
         showChallenge();
     }
 
     function showChallenge() {
+        if (currentIndex === -1) {
+            showConceptScreen();
+            return;
+        }
+
         const c = levelChallenges[currentIndex];
         const isSolved = !!(progress[c.id] && progress[c.id].solved);
         hintVisible = false;
@@ -179,37 +192,32 @@ const PyRex = (() => {
         document.getElementById('challenge-counter').textContent =
             `${currentIndex + 1} / ${levelChallenges.length}`;
         document.getElementById('challenge-title').textContent = c.title;
-        document.getElementById('challenge-instruction').textContent = c.instruction;
 
-        // Prev / next nav arrows
-        document.getElementById('btn-prev').style.display =
-            currentIndex > 0 ? '' : 'none';
+        // Prev arrow: show on challenge 0 too (goes back to concept screen)
+        document.getElementById('btn-prev').style.display = currentIndex >= 0 ? '' : 'none';
         document.getElementById('btn-nav-next').style.display =
             currentIndex < levelChallenges.length - 1 ? '' : 'none';
+
+        // Show challenge-specific elements; hide concept-screen elements
+        document.getElementById('challenge-instruction').textContent = c.instruction;
+        document.getElementById('challenge-instruction').style.display = '';
+        document.getElementById('concept-box').style.display = 'none';
+        document.getElementById('concept-actions').style.display = 'none';
+        document.getElementById('test-string-box').style.display = '';
+        document.getElementById('match-count').style.display = '';
+        document.getElementById('regex-input-row').style.display = '';
 
         const input = document.getElementById('regex-input');
         const inputRow = document.getElementById('regex-input-row');
         const matchCountEl = document.getElementById('match-count');
         const hintBox = document.getElementById('hint-box');
-        const conceptBox = document.getElementById('concept-box');
-        const conceptText = document.getElementById('concept-text');
 
-        // Always reset error and hint state
         inputRow.classList.remove('has-error');
         document.getElementById('input-error').style.display = 'none';
         hintBox.style.display = 'none';
         hintBox.textContent = c.hint || '';
 
-        // Show concept intro automatically for unsolved challenges that introduce a new concept
-        if (c.concept && !isSolved) {
-            conceptText.textContent = c.concept;
-            conceptBox.style.display = '';
-        } else {
-            conceptBox.style.display = 'none';
-        }
-
         if (isSolved) {
-            // Show completed state: green highlights, solution in input
             document.getElementById('test-string-box').innerHTML =
                 renderHighlights(c.testString, c.solution, 'match-correct');
             input.value = c.solution;
@@ -224,7 +232,6 @@ const PyRex = (() => {
             document.getElementById('char-picker').style.display = 'none';
             document.getElementById('completed-banner').style.display = '';
         } else {
-            // Show normal unsolved state
             document.getElementById('test-string-box').innerHTML = escapeHtml(c.testString);
             input.value = '';
             input.readOnly = false;
@@ -240,7 +247,35 @@ const PyRex = (() => {
         if (!isSolved) input.focus();
     }
 
+    function showConceptScreen() {
+        const levelObj = LEVELS.find(l => l.num === currentLevel);
+
+        document.getElementById('level-tag').textContent = `Level ${currentLevel}`;
+        document.getElementById('challenge-counter').textContent = '';
+        document.getElementById('btn-prev').style.display = 'none';
+        document.getElementById('btn-nav-next').style.display = 'none';
+
+        document.getElementById('challenge-title').textContent = levelObj ? levelObj.title : '';
+        document.getElementById('challenge-instruction').style.display = 'none';
+
+        document.getElementById('concept-text').textContent = LEVEL_CONCEPTS[currentLevel] || '';
+        document.getElementById('concept-box').style.display = '';
+        document.getElementById('concept-actions').style.display = '';
+
+        document.getElementById('test-string-box').style.display = 'none';
+        document.getElementById('match-count').style.display = 'none';
+        document.getElementById('regex-input-row').style.display = 'none';
+        document.getElementById('input-error').style.display = 'none';
+        document.getElementById('char-picker').style.display = 'none';
+        document.getElementById('hint-box').style.display = 'none';
+        document.getElementById('challenge-actions').style.display = 'none';
+        document.getElementById('completed-banner').style.display = 'none';
+
+        showView('view-challenge');
+    }
+
     function updateHighlight() {
+        if (currentIndex === -1) return;
         const c = levelChallenges[currentIndex];
         if (progress[c.id] && progress[c.id].solved) return;
         const pattern = document.getElementById('regex-input').value;
@@ -284,6 +319,7 @@ const PyRex = (() => {
     }
 
     function submitAnswer() {
+        if (currentIndex === -1) return;
         const c = levelChallenges[currentIndex];
         if (progress[c.id] && progress[c.id].solved) return;
         const pattern = document.getElementById('regex-input').value.trim();
@@ -309,15 +345,12 @@ const PyRex = (() => {
         document.getElementById('result-text').textContent = correct ? 'Correct!' : 'Not quite.';
         banner.className = 'result-banner ' + (correct ? 'correct' : 'incorrect');
 
-        // Show test string with the correct solution highlighted
         document.getElementById('result-test-box').innerHTML =
             renderHighlights(challenge.testString, challenge.solution, 'match-correct');
 
-        // Always show the pattern
         const correctBox = document.getElementById('correct-pattern-box');
         correctBox.style.display = '';
-        document.getElementById('correct-pattern-code').textContent =
-            challenge.solution;
+        document.getElementById('correct-pattern-code').textContent = challenge.solution;
 
         document.getElementById('explanation-text').textContent = challenge.explanation;
 
@@ -327,12 +360,15 @@ const PyRex = (() => {
 
         const tryAgainBtn = document.getElementById('btn-try-again');
         const nextBtn = document.getElementById('btn-next');
+        const backBtn = document.getElementById('btn-back-levels');
         if (correct) {
             tryAgainBtn.style.display = 'none';
             nextBtn.className = 'btn btn-primary';
+            backBtn.style.display = isLast ? 'none' : '';
         } else {
             tryAgainBtn.style.display = '';
             nextBtn.className = 'btn btn-secondary';
+            backBtn.style.display = '';
         }
 
         showView('view-result');
@@ -365,6 +401,20 @@ const PyRex = (() => {
                 return;
             }
 
+            if (e.key === 'ArrowLeft' && activeView === 'view-challenge') {
+                if (document.activeElement !== document.getElementById('regex-input')) {
+                    document.getElementById('btn-prev').click();
+                }
+                return;
+            }
+
+            if (e.key === 'ArrowRight' && activeView === 'view-challenge') {
+                if (document.activeElement !== document.getElementById('regex-input')) {
+                    document.getElementById('btn-nav-next').click();
+                }
+                return;
+            }
+
             if (e.key === 'Enter') {
                 if (activeView === 'view-result') {
                     const tryAgainBtn = document.getElementById('btn-try-again');
@@ -374,8 +424,11 @@ const PyRex = (() => {
                         document.getElementById('btn-next').click();
                     }
                 } else if (activeView === 'view-challenge') {
-                    // Only handle here when the input is not focused (input has its own handler)
-                    if (document.activeElement !== document.getElementById('regex-input')) {
+                    if (currentIndex === -1) {
+                        // Concept screen — Enter starts the level
+                        currentIndex = 0;
+                        showChallenge();
+                    } else if (document.activeElement !== document.getElementById('regex-input')) {
                         e.preventDefault();
                         submitAnswer();
                     }
@@ -389,6 +442,12 @@ const PyRex = (() => {
             if (e.key === 'Enter') {
                 e.stopPropagation();
                 submitAnswer();
+            }
+            if (e.key === 'ArrowLeft' && e.target.selectionStart === 0 && e.target.selectionEnd === 0) {
+                document.getElementById('btn-prev').click();
+            }
+            if (e.key === 'ArrowRight' && e.target.selectionStart === e.target.value.length && e.target.selectionEnd === e.target.value.length) {
+                document.getElementById('btn-nav-next').click();
             }
         });
 
@@ -417,9 +476,16 @@ const PyRex = (() => {
             hintBox.style.display = hintVisible ? '' : 'none';
         });
 
+        // Concept screen: Start button
+        document.getElementById('btn-start').addEventListener('click', () => {
+            currentIndex = 0;
+            showChallenge();
+        });
+
         // Challenge: prev / next nav
         document.getElementById('btn-prev').addEventListener('click', () => {
             if (currentIndex > 0) { currentIndex--; showChallenge(); }
+            else if (currentIndex === 0) { currentIndex = -1; showChallenge(); }
         });
         document.getElementById('btn-nav-next').addEventListener('click', () => {
             if (currentIndex < levelChallenges.length - 1) { currentIndex++; showChallenge(); }
