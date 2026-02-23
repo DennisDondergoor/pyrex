@@ -16,7 +16,7 @@
         <header id="header">
             <div class="header-content">
                 <div class="header-left">
-                    <button id="btn-back" class="btn-icon" title="Back to levels" style="display:none">
+                    <button id="btn-back" class="btn-icon" title="Back to levels" aria-label="Back to levels" style="display:none">
                         <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
                             <path d="M13 4L7 10L13 16" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                         </svg>
@@ -42,7 +42,7 @@
         <section id="view-challenge" class="view">
             <div class="challenge-nav">
                 <div class="challenge-nav-left">
-                    <button id="btn-prev" class="btn-icon" title="Previous challenge" style="display:none">
+                    <button id="btn-prev" class="btn-icon" title="Previous challenge" aria-label="Previous challenge" style="display:none">
                         <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
                             <path d="M13 4L7 10L13 16" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                         </svg>
@@ -50,7 +50,7 @@
                     <span class="level-tag" id="level-tag">Level 1</span>
                 </div>
                 <span class="challenge-counter" id="challenge-counter">1 / 3</span>
-                <button id="btn-nav-next" class="btn-icon" title="Next challenge" style="display:none">
+                <button id="btn-nav-next" class="btn-icon" title="Next challenge" aria-label="Next challenge" style="display:none">
                     <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
                         <path d="M7 4L13 10L7 16" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                     </svg>
@@ -76,6 +76,7 @@
                     type="text"
                     id="regex-input"
                     class="regex-input"
+                    aria-label="Regular expression pattern"
                     autocomplete="off"
                     autocorrect="off"
                     autocapitalize="off"
@@ -150,9 +151,9 @@
         </section>
 
         <!-- Modal: Reset Progress -->
-        <div id="modal-reset" class="modal hidden">
+        <div id="modal-reset" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="modal-reset-heading">
             <div class="modal-content">
-                <h2>Reset all progress?</h2>
+                <h2 id="modal-reset-heading">Reset all progress?</h2>
                 <p>This will clear all your completed challenges. This cannot be undone.</p>
                 <div class="modal-actions">
                     <button class="btn btn-secondary" id="btn-reset-cancel">Cancel</button>

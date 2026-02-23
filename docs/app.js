@@ -388,6 +388,17 @@ const PyRex = (() => {
         document.addEventListener('keydown', e => {
             const modal = document.getElementById('modal-reset');
 
+            if (e.key === 'Tab' && !modal.classList.contains('hidden')) {
+                const cancelBtn = document.getElementById('btn-reset-cancel');
+                const confirmBtn = document.getElementById('btn-reset-confirm');
+                if (e.shiftKey) {
+                    if (document.activeElement === cancelBtn) { e.preventDefault(); confirmBtn.focus(); }
+                } else {
+                    if (document.activeElement === confirmBtn) { e.preventDefault(); cancelBtn.focus(); }
+                }
+                return;
+            }
+
             if (e.key === 'Escape') {
                 if (!modal.classList.contains('hidden')) {
                     modal.classList.add('hidden');
@@ -520,6 +531,7 @@ const PyRex = (() => {
         // Reset progress
         document.getElementById('btn-reset-progress').addEventListener('click', () => {
             document.getElementById('modal-reset').classList.remove('hidden');
+            document.getElementById('btn-reset-cancel').focus();
         });
         document.getElementById('btn-reset-cancel').addEventListener('click', () => {
             document.getElementById('modal-reset').classList.add('hidden');

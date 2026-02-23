@@ -74,6 +74,12 @@ body {
     color: var(--accent-color);
 }
 
+/* ===== Focus styles ===== */
+:focus-visible {
+    outline: 2px solid var(--accent-color);
+    outline-offset: 3px;
+}
+
 /* ===== Buttons ===== */
 .btn-icon {
     background: none;
