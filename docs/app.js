@@ -94,6 +94,17 @@ const PyRex = (() => {
         );
     }
 
+    // Render concept text: double-newline-separated paragraphs, `backtick` → <code>
+    function renderConceptText(text) {
+        return text.trim().split(/\n\n+/).map(para => {
+            const html = para.split('`').map((seg, i) => {
+                const esc = seg.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+                return i % 2 === 0 ? esc : `<code>${esc}</code>`;
+            }).join('');
+            return `<p>${html}</p>`;
+        }).join('');
+    }
+
     // Render testString HTML with matched portions wrapped in <mark class="cssClass">
     function renderHighlights(text, pattern, cssClass) {
         const matches = pattern ? getMatches(pattern, text) : null;
@@ -258,7 +269,7 @@ const PyRex = (() => {
         document.getElementById('challenge-title').textContent = levelObj ? levelObj.title : '';
         document.getElementById('challenge-instruction').style.display = 'none';
 
-        document.getElementById('concept-text').textContent = LEVEL_CONCEPTS[currentLevel] || '';
+        document.getElementById('concept-box').innerHTML = renderConceptText(LEVEL_CONCEPTS[currentLevel] || '');
         document.getElementById('concept-box').style.display = '';
         document.getElementById('concept-actions').style.display = '';
 

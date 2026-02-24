@@ -7,69 +7,69 @@
 
 const LEVEL_CONCEPTS = {
 
-    1: `A regex (regular expression) is a pattern that describes text to search for. In its simplest form, the pattern is just the text you want to find — plain characters match themselves literally. The pattern cat finds every c-a-t sequence wherever it appears in the string.
+    1: `A regex (regular expression) is a pattern that describes text to search for. In its simplest form, the pattern is just the text you want to find — plain characters match themselves literally. The pattern \`cat\` finds every c-a-t sequence wherever it appears in the string.
 
-Regex is case-sensitive by default: Cat and CAT would not match the pattern cat.
+Regex is case-sensitive by default: \`Cat\` and \`CAT\` would not match the pattern \`cat\`.
 
-A match can occur anywhere inside a string, not just at whole-word boundaries — the pattern end matches inside 'blended', 'trending', and 'blend' as well. Spaces and punctuation are matched literally too: hot dog (with a space) finds that exact two-word phrase.`,
+A match can occur anywhere inside a string, not just at whole-word boundaries — the pattern \`end\` matches inside 'blended', 'trending', and 'blend' as well. Spaces and punctuation are matched literally too: \`hot dog\` (with a space) finds that exact two-word phrase.`,
 
-    2: `The dot . is a wildcard that matches any single character at that position, except a newline. So c.t matches cat, cut, cot, c9t, and even c t — anything with c and t one character apart.
+    2: `The dot \`.\` is a wildcard that matches any single character at that position, except a newline. So \`c.t\` matches cat, cut, cot, c9t, and even c t — anything with c and t one character apart.
 
-Many characters have special meaning in regex. To match them literally, escape them with a backslash — it strips the special meaning. A backslash before . gives \\. which matches a real period; \\( matches a real parenthesis; \\? matches a real question mark.
+Many characters have special meaning in regex. To match them literally, escape them with a backslash — it strips the special meaning. A backslash before \`.\` gives \`\\.\` which matches a real period; \`\\(\` matches a real parenthesis; \`\\?\` matches a real question mark.
 
-Characters that need escaping: . * + ? | ^ $ \\ ( ) [ ] { }`,
+Characters that need escaping: \`. * + ? | ^ $ \\ ( ) [ ] { }\``,
 
-    3: `Square brackets define a character class — a set of characters where exactly one may match at that position. [aeiou] matches any single vowel; [abc] matches a, b, or c.
+    3: `Square brackets define a character class — a set of characters where exactly one may match at that position. \`[aeiou]\` matches any single vowel; \`[abc]\` matches a, b, or c.
 
-Use a hyphen inside brackets to define a range: [a-z] matches any lowercase letter, [A-Z] any uppercase letter, [0-9] any digit. Ranges can be combined in one class: [a-zA-Z] matches any letter of either case.
+Use a hyphen inside brackets to define a range: \`[a-z]\` matches any lowercase letter, \`[A-Z]\` any uppercase letter, \`[0-9]\` any digit. Ranges can be combined in one class: \`[a-zA-Z]\` matches any letter of either case.
 
-A caret ^ immediately after the opening bracket negates the class: [^0-9] matches any character that is NOT a digit. Note: inside square brackets the dot . loses its wildcard meaning and matches a literal period.`,
+A caret \`^\` immediately after the opening bracket negates the class: \`[^0-9]\` matches any character that is NOT a digit. Note: inside square brackets the dot \`.\` loses its wildcard meaning and matches a literal period.`,
 
     4: `Quantifiers control how many times the preceding element — a character, class, or group — may repeat.
 
-The three most common: + means one or more, * means zero or more, ? means zero or one (optional). Curly braces give precise counts: {3} means exactly 3, {3,} means 3 or more, {2,5} means between 2 and 5.
+The three most common: \`+\` means one or more, \`*\` means zero or more, \`?\` means zero or one (optional). Curly braces give precise counts: \`{3}\` means exactly 3, \`{3,}\` means 3 or more, \`{2,5}\` means between 2 and 5.
 
-By default, quantifiers are greedy — they match as many characters as possible. Adding ? after a quantifier makes it lazy: it matches as few as possible and stops at the earliest opportunity. +? and *? are the lazy versions of + and *.`,
+By default, quantifiers are greedy — they match as many characters as possible. Adding \`?\` after a quantifier makes it lazy: it matches as few as possible and stops at the earliest opportunity. \`+?\` and \`*?\` are the lazy versions of \`+\` and \`*\`.`,
 
-    5: `Anchors match positions in the string, not characters — they consume no text. ^ asserts that the match starts at the very beginning of the string; $ asserts it ends at the very end.
+    5: `Anchors match positions in the string, not characters — they consume no text. \`^\` asserts that the match starts at the very beginning of the string; \`$\` asserts it ends at the very end.
 
-\\b matches a word boundary: the position between a word character (letter, digit, or underscore) and a non-word character (space, punctuation, or start/end of string). Wrapping a word with \\b on both sides — \\bword\\b — ensures it only matches as a standalone word and not inside a longer one.
+\`\\b\` matches a word boundary: the position between a word character (letter, digit, or underscore) and a non-word character (space, punctuation, or start/end of string). Wrapping a word with \`\\b\` on both sides — \`\\bword\\b\` — ensures it only matches as a standalone word and not inside a longer one.
 
-\\B is the opposite of \\b: it matches a position that is NOT a word boundary, so it only succeeds when you are inside a word.`,
+\`\\B\` is the opposite of \`\\b\`: it matches a position that is NOT a word boundary, so it only succeeds when you are inside a word.`,
 
     6: `Shorthand classes are compact aliases for common character sets.
 
-\\d matches any digit — the same as [0-9]. \\w matches any word character (letter, digit, or underscore) — the same as [a-zA-Z0-9_]. \\s matches any whitespace character: space, tab, or newline.
+\`\\d\` matches any digit — the same as \`[0-9]\`. \`\\w\` matches any word character (letter, digit, or underscore) — the same as \`[a-zA-Z0-9_]\`. \`\\s\` matches any whitespace character: space, tab, or newline.
 
-Each has an uppercase negated version: \\D matches anything that is NOT a digit, \\W anything that is NOT a word character, \\S anything that is NOT whitespace.
+Each has an uppercase negated version: \`\\D\` matches anything that is NOT a digit, \`\\W\` anything that is NOT a word character, \`\\S\` anything that is NOT whitespace.
 
-Shorthands combine freely with quantifiers: \\d+ matches one or more consecutive digits as a single token, \\w+ matches a whole word, \\s+ matches a run of whitespace.`,
+Shorthands combine freely with quantifiers: \`\\d+\` matches one or more consecutive digits as a single token, \`\\w+\` matches a whole word, \`\\s+\` matches a run of whitespace.`,
 
     7: `Parentheses create groups, which serve two purposes.
 
-First, grouping: they let you apply a quantifier to a whole sequence rather than just one character. (?:ha)+ repeats the two-character sequence ha as one unit. The ?: prefix makes it a non-capturing group — use this when you only need grouping for repetition or alternation.
+First, grouping: they let you apply a quantifier to a whole sequence rather than just one character. \`(?:ha)+\` repeats the two-character sequence ha as one unit. The \`?:\` prefix makes it a non-capturing group — use this when you only need grouping for repetition or alternation.
 
-Second, capturing: a group without ?: stores its matched text. The first capturing group is referenced as \\1, the second as \\2, and so on. A backreference reuses the exact text that was captured — not just the same pattern, but the same characters. For example, (\\w+) \\1 finds any word followed by that exact same word again.`,
+Second, capturing: a group without \`?:\` stores its matched text. The first capturing group is referenced as \`\\1\`, the second as \`\\2\`, and so on. A backreference reuses the exact text that was captured — not just the same pattern, but the same characters. For example, \`(\\w+) \\1\` finds any word followed by that exact same word again.`,
 
-    8: `The pipe | means OR — the pattern matches either the expression on its left or the one on its right. cat|dog matches 'cat' or 'dog' wherever they appear. You can chain as many alternatives as needed: Mon|Tue|Wed|Thu.
+    8: `The pipe \`|\` means OR — the pattern matches either the expression on its left or the one on its right. \`cat|dog\` matches 'cat' or 'dog' wherever they appear. You can chain as many alternatives as needed: \`Mon|Tue|Wed|Thu\`.
 
 The engine tests alternatives left to right at each position and takes the first one that succeeds.
 
-Without grouping, | splits the entire pattern: gra|ey means 'gra' or 'ey' — two unrelated patterns. Wrap alternatives in a non-capturing group to scope them: gr(?:a|e)y means 'gray' or 'grey'.
+Without grouping, \`|\` splits the entire pattern: \`gra|ey\` means 'gra' or 'ey' — two unrelated patterns. Wrap alternatives in a non-capturing group to scope them: \`gr(?:a|e)y\` means 'gray' or 'grey'.
 
-When alternatives overlap — one being a prefix of another — put the longer one first: colour|col, not col|colour.`,
+When alternatives overlap — one being a prefix of another — put the longer one first: \`colour|col\`, not \`col|colour\`.`,
 
-    9: `Named groups are capturing groups with a label instead of a number. In this app (JavaScript regex) the syntax is (?<name>...) — for example, (?<year>\\d{4}) captures four digits under the name 'year'. Named groups behave exactly like numbered capturing groups but make patterns far easier to read.
+    9: `Named groups are capturing groups with a label instead of a number. In this app (JavaScript regex) the syntax is \`(?<name>...)\` — for example, \`(?<year>\\d{4})\` captures four digits under the name 'year'. Named groups behave exactly like numbered capturing groups but make patterns far easier to read.
 
-You can reference a named group later with \\k<name> — a named backreference that requires the exact same text as what was captured. Multiple named groups work independently in the same pattern.
+You can reference a named group later with \`\\k<name>\` — a named backreference that requires the exact same text as what was captured. Multiple named groups work independently in the same pattern.
 
-Note: Python's re module uses a slightly different syntax — (?P<name>...) to define and (?P=name) to reference — but the concept is identical.`,
+Note: Python's re module uses a slightly different syntax — \`(?P<name>...)\` to define and \`(?P=name)\` to reference — but the concept is identical.`,
 
     10: `Lookaheads and lookbehinds are zero-width assertions — they check what is around the current position without consuming any characters, so they never appear in the match itself.
 
-(?=X) is a positive lookahead: succeeds only if X immediately follows. (?!X) is a negative lookahead: succeeds only if X does NOT follow. (?<=X) is a positive lookbehind: succeeds only if X immediately precedes. (?<!X) is a negative lookbehind: succeeds only if X does NOT precede.
+\`(?=X)\` is a positive lookahead: succeeds only if X immediately follows. \`(?!X)\` is a negative lookahead: succeeds only if X does NOT follow. \`(?<=X)\` is a positive lookbehind: succeeds only if X immediately precedes. \`(?<!X)\` is a negative lookbehind: succeeds only if X does NOT precede.
 
-For example, \\w+(?=:) matches a word only when a colon follows — the colon is checked but not included in the match. Lookaheads and lookbehinds can be combined to filter both sides of a match at once.`,
+For example, \`\\w+(?=:)\` matches a word only when a colon follows — the colon is checked but not included in the match. Lookaheads and lookbehinds can be combined to filter both sides of a match at once.`,
 
 };
 

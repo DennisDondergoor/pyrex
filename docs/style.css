@@ -439,12 +439,21 @@ body {
     padding: 20px 24px;
     margin-bottom: 28px;
     line-height: 1.75;
-    white-space: pre-wrap;
 }
 
 .concept-box p {
     font-size: 1.25rem;
     color: #fff;
+    margin: 0;
+}
+
+.concept-box p + p {
+    margin-top: 14px;
+}
+
+.concept-box code {
+    color: var(--accent-color);
+    font-size: inherit;
 }
 
 .concept-actions {
