@@ -184,6 +184,20 @@ body {
     background: var(--accent-bg-subtle);
 }
 
+.level-card.completed {
+    background: var(--success-bg);
+    border-color: var(--success-border);
+}
+
+.level-card.completed:hover {
+    background: var(--success-bg);
+    border-color: var(--success-color);
+}
+
+.level-card.completed .level-progress-label {
+    color: var(--success-color);
+}
+
 .level-card.coming-soon {
     opacity: 0.38;
     cursor: default;
@@ -273,7 +287,7 @@ body {
 
 .challenge-counter {
     font-size: 1.25rem;
-    color: #fff;
+    color: #888;
 }
 
 .challenge-title {

@@ -147,7 +147,8 @@ const PyRex = (() => {
             const comingSoon = total === 0;
 
             const card = document.createElement('div');
-            card.className = 'level-card' + (comingSoon ? ' coming-soon' : '');
+            const isCompleted = !comingSoon && done === total;
+            card.className = 'level-card' + (comingSoon ? ' coming-soon' : '') + (isCompleted ? ' completed' : '');
 
             if (comingSoon) {
                 card.innerHTML = `
@@ -162,7 +163,7 @@ const PyRex = (() => {
                     <div class="level-progress-bar">
                         <div class="level-progress-fill" style="width:${pct}%"></div>
                     </div>
-                    <div class="level-progress-label">${done} / ${total} completed</div>
+                    <div class="level-progress-label">${isCompleted ? '✓ Completed' : `${done} / ${total} completed`}</div>
                 `;
                 card.addEventListener('click', () => startLevel(level.num));
             }
@@ -262,7 +263,7 @@ const PyRex = (() => {
         const levelObj = LEVELS.find(l => l.num === currentLevel);
 
         document.getElementById('level-tag').textContent = `Level ${currentLevel}`;
-        document.getElementById('challenge-counter').textContent = '';
+        document.getElementById('challenge-counter').textContent = 'Intro';
         document.getElementById('btn-prev').style.display = 'none';
         document.getElementById('btn-nav-next').style.display = 'none';
 
