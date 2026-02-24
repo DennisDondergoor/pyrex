@@ -471,6 +471,8 @@ body {
 }
 
 .concept-actions {
+    display: flex;
+    justify-content: flex-end;
     margin-top: 8px;
 }
 
@@ -573,8 +575,11 @@ body {
 
 .result-actions {
     display: flex;
-    justify-content: flex-end;
     gap: 12px;
+}
+
+#btn-next {
+    margin-left: auto;
 }
 
 /* ===== Modal ===== */
