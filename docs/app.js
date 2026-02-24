@@ -357,11 +357,18 @@ const PyRex = (() => {
         document.getElementById('result-text').textContent = correct ? 'Correct!' : 'Not quite.';
         banner.className = 'result-banner ' + (correct ? 'correct' : 'incorrect');
 
+        const yourSection = document.getElementById('your-pattern-section');
+        if (!correct) {
+            document.getElementById('your-pattern-code').textContent = lastPattern;
+            document.getElementById('your-test-box').innerHTML =
+                renderHighlights(challenge.testString, lastPattern, 'match');
+            yourSection.style.display = '';
+        } else {
+            yourSection.style.display = 'none';
+        }
+
         document.getElementById('result-test-box').innerHTML =
             renderHighlights(challenge.testString, challenge.solution, 'match-correct');
-
-        const correctBox = document.getElementById('correct-pattern-box');
-        correctBox.style.display = '';
         document.getElementById('correct-pattern-code').textContent = challenge.solution;
 
         document.getElementById('explanation-text').textContent = challenge.explanation;
