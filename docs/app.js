@@ -581,7 +581,8 @@ const PyRex = (() => {
             if (firebaseSync && firebaseSync.isSignedIn()) {
                 firebaseSync.signOut();
             } else if (firebaseSync) {
-                firebaseSync.signIn().catch(() => {
+                firebaseSync.signIn().catch((error) => {
+                    if (error.code === 'auth/popup-closed-by-user') return;
                     document.getElementById('sync-status').textContent = 'Sign-in failed. Please try again.';
                     setTimeout(() => { document.getElementById('sync-status').textContent = ''; }, 4000);
                 });
@@ -625,7 +626,7 @@ const PyRex = (() => {
                 btn.title = 'Sign out';
                 statusEl.textContent = `Signed in as ${firebaseSync.getUserName()}`;
                 await loadFromCloud();
-                renderHome();
+                if (activeView === 'view-home') renderHome();
             } else {
                 btn.textContent = 'Sign in';
                 btn.title = 'Sign in';
@@ -635,8 +636,10 @@ const PyRex = (() => {
         firebaseSync.init();
     }
 
+    let _suppressSync = false;
+
     function syncToCloud() {
-        if (!firebaseSync || !firebaseSync.isSignedIn()) return;
+        if (_suppressSync || !firebaseSync || !firebaseSync.isSignedIn()) return;
         firebaseSync.scheduleSave(() => ({ progress }));
     }
 
@@ -645,15 +648,20 @@ const PyRex = (() => {
         const cloud = await firebaseSync.loadFromCloud();
         if (!cloud || !cloud.progress) return;
 
-        for (const id in cloud.progress) {
-            const c = cloud.progress[id];
-            const l = progress[id] || { solved: false, attempts: 0 };
-            progress[id] = {
-                solved: l.solved || c.solved,
-                attempts: Math.max(l.attempts || 0, c.attempts || 0)
-            };
+        _suppressSync = true;
+        try {
+            for (const id in cloud.progress) {
+                const c = cloud.progress[id];
+                const l = progress[id] || { solved: false, attempts: 0 };
+                progress[id] = {
+                    solved: l.solved || c.solved,
+                    attempts: Math.max(l.attempts || 0, c.attempts || 0)
+                };
+            }
+            localStorage.setItem('pyrex_progress', JSON.stringify(progress));
+        } finally {
+            _suppressSync = false;
         }
-        localStorage.setItem('pyrex_progress', JSON.stringify(progress));
     }
 
     document.addEventListener('DOMContentLoaded', init);
