@@ -23,6 +23,7 @@
     --error-border: rgba(248, 113, 113, 0.3);
 
     --max-width: 680px;
+    --text-muted: #888;
 }
 
 html {
@@ -69,6 +70,29 @@ body {
     justify-content: flex-end;
 }
 
+.btn-text {
+    background: none;
+    border: none;
+    color: var(--text-color);
+    font-family: inherit;
+    font-size: 0.875rem;
+    cursor: pointer;
+    padding: 4px 8px;
+    border-radius: 4px;
+}
+
+.btn-text:hover {
+    color: var(--accent-color);
+}
+
+.sync-status {
+    text-align: center;
+    font-size: 0.75rem;
+    color: var(--text-color);
+    padding: 2px 0 6px;
+    min-height: 1rem;
+}
+
 .logo {
     font-size: 1.75rem;
     font-weight: 700;
@@ -95,7 +119,7 @@ body {
 }
 
 .btn-icon:hover {
-    color: var(--text-color);
+    color: var(--accent-color);
 }
 
 .btn {

@@ -13,6 +13,7 @@ const PyRex = (() => {
     let lastPattern = '';
     let progress = loadProgress();
     let activeView = 'view-home';
+    let firebaseSync = null;
 
     // ─── Level definitions ────────────────────────────────────────────────────
 
@@ -45,6 +46,7 @@ const PyRex = (() => {
         if (solved) entry.solved = true;
         progress[id] = entry;
         localStorage.setItem('pyrex_progress', JSON.stringify(progress));
+        syncToCloud();
     }
 
     function clearProgress() {
@@ -560,15 +562,98 @@ const PyRex = (() => {
         document.getElementById('btn-reset-cancel').addEventListener('click', () => {
             document.getElementById('modal-reset').classList.add('hidden');
         });
-        document.getElementById('btn-reset-confirm').addEventListener('click', () => {
+        document.getElementById('btn-reset-confirm').addEventListener('click', async () => {
+            if (firebaseSync && firebaseSync.syncTimeout) {
+                clearTimeout(firebaseSync.syncTimeout);
+                firebaseSync.syncTimeout = null;
+                firebaseSync._pendingGetData = null;
+            }
+            if (firebaseSync && firebaseSync.isSignedIn()) {
+                await firebaseSync.deleteAllData();
+            }
             clearProgress();
             document.getElementById('modal-reset').classList.add('hidden');
             renderHome();
         });
 
+        // Auth button
+        document.getElementById('btn-auth').addEventListener('click', () => {
+            if (firebaseSync && firebaseSync.isSignedIn()) {
+                firebaseSync.signOut();
+            } else if (firebaseSync) {
+                firebaseSync.signIn().catch(() => {
+                    document.getElementById('sync-status').textContent = 'Sign-in failed. Please try again.';
+                    setTimeout(() => { document.getElementById('sync-status').textContent = ''; }, 4000);
+                });
+            }
+        });
+
+        // Flush pending sync on page hide/unload
+        document.addEventListener('visibilitychange', () => {
+            if (document.visibilityState === 'hidden' && firebaseSync) {
+                firebaseSync.flushPendingSync();
+            }
+        });
+        window.addEventListener('pagehide', () => {
+            if (firebaseSync) firebaseSync.flushPendingSync();
+        });
+
+        // Firebase
+        initFirebase();
+
         // Initial render
         renderHome();
         showView('view-home');
+    }
+
+    // ─── Firebase ─────────────────────────────────────────────────────────────
+
+    function initFirebase() {
+        firebaseSync = new FirebaseSync();
+        firebaseSync.onSyncResult = (ok) => {
+            const statusEl = document.getElementById('sync-status');
+            if (!ok) {
+                statusEl.textContent = 'Sync failed';
+                setTimeout(() => { statusEl.textContent = ''; }, 3000);
+            }
+        };
+        firebaseSync.onAuthChange(async (user) => {
+            const btn = document.getElementById('btn-auth');
+            const statusEl = document.getElementById('sync-status');
+            if (user) {
+                btn.textContent = 'Sign out';
+                btn.title = 'Sign out';
+                statusEl.textContent = `Signed in as ${firebaseSync.getUserName()}`;
+                await loadFromCloud();
+                renderHome();
+            } else {
+                btn.textContent = 'Sign in';
+                btn.title = 'Sign in';
+                statusEl.textContent = '';
+            }
+        });
+        firebaseSync.init();
+    }
+
+    function syncToCloud() {
+        if (!firebaseSync || !firebaseSync.isSignedIn()) return;
+        firebaseSync.scheduleSave(() => ({ progress }));
+    }
+
+    async function loadFromCloud() {
+        if (!firebaseSync || !firebaseSync.isSignedIn()) return;
+        const cloud = await firebaseSync.loadFromCloud();
+        if (!cloud || !cloud.progress) return;
+
+        for (const id in cloud.progress) {
+            const c = cloud.progress[id];
+            const l = progress[id] || { solved: false, attempts: 0 };
+            progress[id] = {
+                solved: l.solved || c.solved,
+                attempts: Math.max(l.attempts || 0, c.attempts || 0)
+            };
+        }
+        localStorage.setItem('pyrex_progress', JSON.stringify(progress));
     }
 
     document.addEventListener('DOMContentLoaded', init);

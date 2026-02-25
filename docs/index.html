@@ -23,8 +23,11 @@
                     </button>
                 </div>
                 <h1 class="logo">PyRex</h1>
-                <div class="header-right"></div>
+                <div class="header-right">
+                    <button id="btn-auth" class="btn-text" title="Sign in">Sign in</button>
+                </div>
             </div>
+            <div id="sync-status" class="sync-status"></div>
         </header>
 
         <!-- View: Home -->
@@ -175,7 +178,11 @@
 
     </div>
 
+    <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js"></script>
     <script src="challenges.js"></script>
+    <script src="firebase.js"></script>
     <script src="app.js"></script>
 </body>
 </html>
