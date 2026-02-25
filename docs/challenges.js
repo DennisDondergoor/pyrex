@@ -1104,6 +1104,16 @@ const CHALLENGES = [
         hint: 'Use (?<==") as a lookbehind (equals-then-double-quote), [^"]+ for content, and (?=") as a lookahead.'
     },
     {
+        id: 'la-7',
+        level: 10,
+        title: 'Lookbehind for hashtags',
+        instruction: "Match only the word part of each hashtag — not the '#' symbol itself.",
+        testString: 'Trending: #python #regex and #code today',
+        solution: '(?<=#)\\w+',
+        explanation: "(?<=#) is a positive lookbehind — it requires a '#' to precede the match without including it. \\w+ then grabs the word characters that follow.",
+        hint: "Use (?<=#) as a lookbehind before \\w+."
+    },
+    {
         id: 'la-cons',
         level: 10,
         title: 'Combining lookahead and lookbehind',
