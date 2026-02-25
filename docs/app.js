@@ -257,6 +257,7 @@ const PyRex = (() => {
         }
 
         showView('view-challenge');
+        if (!isSolved) requestAnimationFrame(() => input.focus());
     }
 
     function showConceptScreen() {
