@@ -667,4 +667,12 @@ body {
     .header-content {
         padding: 14px 16px;
     }
+
+    .result-actions {
+        flex-direction: column;
+    }
+
+    #btn-next {
+        margin-left: 0;
+    }
 }
