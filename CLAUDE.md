@@ -7,7 +7,7 @@ This file provides guidance to Claude Code when working with code in this reposi
 - **Local dev**: `python3 -m http.server 8002 -d docs` → http://localhost:8002
 - **Production**: https://dennisdondergoor.github.io/pyrex/
 - **Git repo**: https://github.com/DennisDondergoor/pyrex
-- **No Firebase** — client-side only, localStorage for progress
+- **Firebase project**: `pyrex-cee7c` — GitHub OAuth, Firestore cloud sync
 
 ## Development
 
@@ -25,7 +25,8 @@ Single-page app with view toggling (`active` class on `<section>` elements). All
 - **index.html** — Views: home (level grid), challenge, result. Confirmation modal for reset.
 - **style.css** — All styles. Same CSS variables as PyLens: `#000` bg, `#111` cards, `#333` borders, `#4a9eff` accent, Source Code Pro font.
 - **challenges.js** — `LEVEL_CONCEPTS` object (keyed 1–10, multi-paragraph strings shown on the concept intro screen). `CHALLENGES` array (global). Each object: `id`, `level`, `title`, `instruction`, `testString`, `solution` (regex pattern string), `explanation`, `hint`.
-- **app.js** — IIFE module. Handles view routing, regex matching, live highlights, progress storage.
+- **app.js** — IIFE module. Handles view routing, regex matching, live highlights, progress storage, Firebase auth/sync.
+- **firebase.js** — `FirebaseSync` class. GitHub OAuth via popup, Firestore flat path `users/{uid}`, debounced save (2s), keepalive flush on page hide.
 
 ## Key Flows
 
@@ -50,12 +51,14 @@ Single-page app with view toggling (`active` class on `<section>` elements). All
 
 - Both user pattern and solution pattern run with `/g` flag via `new RegExp(pattern, 'g')`
 - Match comparison: same count, same `value` and `index` for every match (order-sensitive)
-- Invalid regex: `has-error` class on input row, error label shown, submit blocked
+- Invalid regex while typing: silently shows no matches. On submit: treated as a wrong answer (shows result screen with "Not quite.")
 - Zero-length match guard: `lastIndex` is incremented and a safety cap of 500 iterations prevents infinite loops
 
-## localStorage
+## Storage
 
-Single key: `pyrex_progress` — object keyed by challenge `id`, value `{ solved: bool, attempts: number }`.
+**localStorage**: single key `pyrex_progress` — object keyed by challenge `id`, value `{ solved: bool, attempts: number }`.
+
+**Firestore**: `users/{uid}` document, field `progress` with the same shape. Merge on sign-in: `solved: local || cloud`, `attempts: max(local, cloud)`.
 
 ## Challenge Data Format
 

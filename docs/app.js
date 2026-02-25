@@ -227,8 +227,6 @@ const PyRex = (() => {
         const matchCountEl = document.getElementById('match-count');
         const hintBox = document.getElementById('hint-box');
 
-        inputRow.classList.remove('has-error');
-        document.getElementById('input-error').style.display = 'none';
         hintBox.style.display = 'none';
         hintBox.textContent = c.hint || '';
 
@@ -280,7 +278,6 @@ const PyRex = (() => {
         document.getElementById('test-string-box').style.display = 'none';
         document.getElementById('match-count').style.display = 'none';
         document.getElementById('regex-input-row').style.display = 'none';
-        document.getElementById('input-error').style.display = 'none';
         document.getElementById('char-picker').style.display = 'none';
         document.getElementById('hint-box').style.display = 'none';
         document.getElementById('challenge-actions').style.display = 'none';
@@ -297,28 +294,12 @@ const PyRex = (() => {
         const testBox = document.getElementById('test-string-box');
         const matchCountEl = document.getElementById('match-count');
         const inputRow = document.getElementById('regex-input-row');
-        const errorEl = document.getElementById('input-error');
-
-        if (!pattern) {
+        if (!pattern || !isValidRegex(pattern)) {
             testBox.innerHTML = escapeHtml(c.testString);
             matchCountEl.textContent = '';
             matchCountEl.className = 'match-count';
-            inputRow.classList.remove('has-error');
-            errorEl.style.display = 'none';
             return;
         }
-
-        if (!isValidRegex(pattern)) {
-            testBox.innerHTML = escapeHtml(c.testString);
-            matchCountEl.textContent = '';
-            matchCountEl.className = 'match-count';
-            inputRow.classList.add('has-error');
-            errorEl.style.display = '';
-            return;
-        }
-
-        inputRow.classList.remove('has-error');
-        errorEl.style.display = 'none';
 
         const matches = getMatches(pattern, c.testString);
         testBox.innerHTML = renderHighlights(c.testString, pattern, 'match');
@@ -343,8 +324,6 @@ const PyRex = (() => {
             document.getElementById('regex-input').focus();
             return;
         }
-
-        if (!isValidRegex(pattern)) return;
 
         lastPattern = pattern;
         const correct = isCorrect(pattern, c.solution, c.testString);
@@ -382,15 +361,12 @@ const PyRex = (() => {
 
         const tryAgainBtn = document.getElementById('btn-try-again');
         const nextBtn = document.getElementById('btn-next');
-        const backBtn = document.getElementById('btn-back-levels');
         if (correct) {
             tryAgainBtn.style.display = 'none';
             nextBtn.className = 'btn btn-primary';
-            backBtn.style.display = 'none';
         } else {
             tryAgainBtn.style.display = '';
             nextBtn.className = 'btn btn-secondary';
-            backBtn.style.display = 'none';
         }
 
         showView('view-result');
@@ -547,11 +523,6 @@ const PyRex = (() => {
             input.setSelectionRange(lastPattern.length, lastPattern.length);
             updateHighlight();
             requestAnimationFrame(() => input.focus());
-        });
-
-        document.getElementById('btn-back-levels').addEventListener('click', () => {
-            renderHome();
-            showView('view-home');
         });
 
         // Reset progress
