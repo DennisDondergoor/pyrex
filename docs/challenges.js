@@ -29,11 +29,13 @@ A caret \`^\` immediately after the opening bracket negates the class: \`[^0-9]\
 
 The three most common: \`+\` means one or more, \`*\` means zero or more, \`?\` means zero or one (optional). Curly braces give precise counts: \`{3}\` means exactly 3, \`{3,}\` means 3 or more, \`{2,5}\` means between 2 and 5.
 
+A quantifier applies to the single element immediately before it. To quantify a multi-character sequence, wrap it in a non-capturing group: \`(?:...)\`. For example, \`(?:un)?\` makes the two-letter prefix 'un' optional as a unit; \`(?:ha)+\` repeats the pair 'ha' one or more times.
+
 By default, quantifiers are greedy — they match as many characters as possible. Adding \`?\` after a quantifier makes it lazy: it matches as few as possible and stops at the earliest opportunity. \`+?\` and \`*?\` are the lazy versions of \`+\` and \`*\`.`,
 
     5: `Anchors match positions in the string, not characters — they consume no text. \`^\` asserts that the match starts at the very beginning of the string; \`$\` asserts it ends at the very end.
 
-\`\\b\` matches a word boundary: the position between a word character (letter, digit, or underscore) and a non-word character (space, punctuation, or start/end of string). Wrapping a word with \`\\b\` on both sides — \`\\bword\\b\` — ensures it only matches as a standalone word and not inside a longer one.
+\`\\b\` matches a word boundary: the position between a word character (letter, digit, or underscore) and a non-word character (space, punctuation, or start/end of string). The shorthand \`\\w\` matches any single word character; \`\\w+\` matches a whole run of them. Combining both: \`\\bword\\b\` ensures a match only as a standalone word; \`\\bpre\\w+\` anchors the start of a word and captures the rest.
 
 \`\\B\` is the opposite of \`\\b\`: it matches a position that is NOT a word boundary, so it only succeeds when you are inside a word.`,
 
