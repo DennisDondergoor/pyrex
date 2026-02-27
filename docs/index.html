@@ -27,7 +27,7 @@
                     <button id="btn-auth" class="btn-text" title="Sign in">Sign in</button>
                 </div>
             </div>
-            <div id="sync-status" class="sync-status"></div>
+            <div id="sync-status" class="sync-status" role="status" aria-live="polite" aria-atomic="true"></div>
         </header>
 
         <!-- View: Home -->
@@ -70,7 +70,7 @@
             </div>
 
             <div class="test-string-box" id="test-string-box"></div>
-            <div class="match-count" id="match-count"></div>
+            <div class="match-count" id="match-count" role="status" aria-live="polite" aria-atomic="true"></div>
 
             <div class="regex-input-row" id="regex-input-row">
                 <input
@@ -85,7 +85,7 @@
                     placeholder="type your pattern"
                 >
             </div>
-            <div class="input-error" id="input-error" style="display:none">Invalid regular expression</div>
+            <div class="input-error" id="input-error" role="alert" style="display:none">Invalid regular expression</div>
 
             <div class="char-picker-wrap">
             <div class="char-picker" id="char-picker">
@@ -126,10 +126,10 @@
             </div>
             </div>
 
-            <div class="hint-box" id="hint-box" style="display:none"></div>
+            <div class="hint-box" id="hint-box" aria-live="polite" style="display:none"></div>
 
             <div class="challenge-actions" id="challenge-actions">
-                <button class="btn btn-secondary" id="btn-hint">Hint</button>
+                <button class="btn btn-secondary" id="btn-hint" aria-expanded="false">Hint</button>
                 <button class="btn btn-primary" id="btn-submit">Submit</button>
             </div>
             <div class="completed-banner" id="completed-banner" style="display:none">✓ Completed</div>
@@ -137,7 +137,7 @@
 
         <!-- View: Result -->
         <section id="view-result" class="view">
-            <div class="result-banner" id="result-banner">
+            <div class="result-banner" id="result-banner" tabindex="-1">
                 <span class="result-icon" id="result-icon"></span>
                 <span id="result-text"></span>
             </div>

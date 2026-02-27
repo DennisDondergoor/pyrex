@@ -58,6 +58,12 @@ const PyRex = (() => {
         localStorage.removeItem('pyrex_progress');
     }
 
+    // ─── DOM helpers ──────────────────────────────────────────────────────────
+
+    function setVisible(el, show) {
+        el.style.display = show ? '' : 'none';
+    }
+
     // ─── Regex utilities ──────────────────────────────────────────────────────
 
     function escapeHtml(str) {
@@ -163,6 +169,9 @@ const PyRex = (() => {
                     <div class="coming-soon-label">Coming soon</div>
                 `;
             } else {
+                card.setAttribute('role', 'button');
+                card.setAttribute('tabindex', '0');
+                card.setAttribute('aria-label', `Level ${level.num}: ${level.title}, ${isCompleted ? 'completed' : `${done} of ${total} completed`}`);
                 card.innerHTML = `
                     <div class="level-number">Level ${level.num}</div>
                     <div class="level-title">${level.title}</div>
@@ -172,6 +181,12 @@ const PyRex = (() => {
                     <div class="level-progress-label">${isCompleted ? '✓ Completed' : `${done} / ${total} completed`}</div>
                 `;
                 card.addEventListener('click', () => startLevel(level.num));
+                card.addEventListener('keydown', e => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                        e.preventDefault();
+                        startLevel(level.num);
+                    }
+                });
             }
 
             grid.appendChild(card);
@@ -207,57 +222,55 @@ const PyRex = (() => {
         const isSolved = !!(progress[c.id] && progress[c.id].solved);
         hintVisible = false;
 
+        // Cache elements used more than once
+        const input      = document.getElementById('regex-input');
+        const testBox    = document.getElementById('test-string-box');
+        const matchCount = document.getElementById('match-count');
+        const hintBox    = document.getElementById('hint-box');
+        const inputRow   = document.getElementById('regex-input-row');
+
+        // Nav bar
         document.getElementById('level-tag').textContent = `Level ${currentLevel}`;
-        document.getElementById('challenge-counter').textContent =
-            `${currentIndex + 1} / ${levelChallenges.length}`;
+        document.getElementById('challenge-counter').textContent = `${currentIndex + 1} / ${levelChallenges.length}`;
         document.getElementById('challenge-title').textContent = c.title;
+        setVisible(document.getElementById('btn-prev'), currentIndex >= 0);
+        setVisible(document.getElementById('btn-nav-next'), currentIndex < levelChallenges.length - 1);
 
-        // Prev arrow: show on challenge 0 too (goes back to concept screen)
-        document.getElementById('btn-prev').style.display = currentIndex >= 0 ? '' : 'none';
-        document.getElementById('btn-nav-next').style.display =
-            currentIndex < levelChallenges.length - 1 ? '' : 'none';
-
-        // Show challenge-specific elements; hide concept-screen elements
+        // Switch from concept layout to challenge layout
         document.getElementById('challenge-instruction').textContent = c.instruction;
-        document.getElementById('challenge-instruction').style.display = '';
-        document.getElementById('concept-box').style.display = 'none';
-        document.getElementById('concept-actions').style.display = 'none';
-        document.getElementById('test-string-box').style.display = '';
-        document.getElementById('match-count').style.display = '';
-        document.getElementById('regex-input-row').style.display = '';
+        setVisible(document.getElementById('challenge-instruction'), true);
+        setVisible(document.getElementById('concept-box'), false);
+        setVisible(document.getElementById('concept-actions'), false);
+        setVisible(testBox, true);
+        setVisible(matchCount, true);
+        setVisible(inputRow, true);
 
-        const input = document.getElementById('regex-input');
-        const inputRow = document.getElementById('regex-input-row');
-        const matchCountEl = document.getElementById('match-count');
-        const hintBox = document.getElementById('hint-box');
-
-        hintBox.style.display = 'none';
+        // Hint (always hidden on load; text pre-filled for when user reveals it)
         hintBox.textContent = c.hint || '';
+        setVisible(hintBox, false);
+        document.getElementById('btn-hint').setAttribute('aria-expanded', false);
 
         if (isSolved) {
-            document.getElementById('test-string-box').innerHTML =
-                renderHighlights(c.testString, c.solution, 'match-correct');
+            testBox.innerHTML = renderHighlights(c.testString, c.solution, 'match-correct');
             input.value = c.solution;
             input.readOnly = true;
-
             const matches = getMatches(c.solution, c.testString);
-            const word = matches && matches.length === 1 ? 'match' : 'matches';
-            matchCountEl.textContent = matches ? `${matches.length} ${word}` : '';
-            matchCountEl.className = 'match-count has-matches';
-
-            document.getElementById('challenge-actions').style.display = 'none';
-            document.getElementById('char-picker').style.display = 'none';
-            document.getElementById('completed-banner').style.display = '';
+            matchCount.textContent = matches ? `${matches.length} ${matches.length === 1 ? 'match' : 'matches'}` : '';
+            matchCount.className = 'match-count has-matches';
+            setVisible(document.getElementById('challenge-actions'), false);
+            setVisible(document.getElementById('char-picker'), false);
+            setVisible(document.getElementById('completed-banner'), true);
         } else {
-            document.getElementById('test-string-box').innerHTML = escapeHtml(c.testString);
+            testBox.innerHTML = escapeHtml(c.testString);
             input.value = '';
             input.readOnly = false;
-            matchCountEl.textContent = '';
-            matchCountEl.className = 'match-count';
-
-            document.getElementById('challenge-actions').style.display = '';
-            document.getElementById('char-picker').style.display = '';
-            document.getElementById('completed-banner').style.display = 'none';
+            matchCount.textContent = '';
+            matchCount.className = 'match-count';
+            setVisible(document.getElementById('input-error'), false);
+            inputRow.classList.remove('has-error');
+            setVisible(document.getElementById('challenge-actions'), true);
+            setVisible(document.getElementById('char-picker'), true);
+            setVisible(document.getElementById('completed-banner'), false);
         }
 
         showView('view-challenge');
@@ -266,26 +279,27 @@ const PyRex = (() => {
 
     function showConceptScreen() {
         const levelObj = LEVELS.find(l => l.num === currentLevel);
+        const conceptBox = document.getElementById('concept-box');
 
+        // Nav bar
         document.getElementById('level-tag').textContent = `Level ${currentLevel}`;
         document.getElementById('challenge-counter').textContent = 'Intro';
-        document.getElementById('btn-prev').style.display = 'none';
-        document.getElementById('btn-nav-next').style.display = 'none';
-
         document.getElementById('challenge-title').textContent = levelObj ? levelObj.title : '';
-        document.getElementById('challenge-instruction').style.display = 'none';
+        setVisible(document.getElementById('btn-prev'), false);
+        setVisible(document.getElementById('btn-nav-next'), false);
 
-        document.getElementById('concept-box').innerHTML = renderConceptText(LEVEL_CONCEPTS[currentLevel] || '');
-        document.getElementById('concept-box').style.display = '';
-        document.getElementById('concept-actions').style.display = '';
-
-        document.getElementById('test-string-box').style.display = 'none';
-        document.getElementById('match-count').style.display = 'none';
-        document.getElementById('regex-input-row').style.display = 'none';
-        document.getElementById('char-picker').style.display = 'none';
-        document.getElementById('hint-box').style.display = 'none';
-        document.getElementById('challenge-actions').style.display = 'none';
-        document.getElementById('completed-banner').style.display = 'none';
+        // Switch from challenge layout to concept layout
+        conceptBox.innerHTML = renderConceptText(LEVEL_CONCEPTS[currentLevel] || '');
+        setVisible(conceptBox, true);
+        setVisible(document.getElementById('concept-actions'), true);
+        setVisible(document.getElementById('challenge-instruction'), false);
+        setVisible(document.getElementById('test-string-box'), false);
+        setVisible(document.getElementById('match-count'), false);
+        setVisible(document.getElementById('regex-input-row'), false);
+        setVisible(document.getElementById('char-picker'), false);
+        setVisible(document.getElementById('hint-box'), false);
+        setVisible(document.getElementById('challenge-actions'), false);
+        setVisible(document.getElementById('completed-banner'), false);
 
         showView('view-challenge');
     }
@@ -298,7 +312,11 @@ const PyRex = (() => {
         const testBox = document.getElementById('test-string-box');
         const matchCountEl = document.getElementById('match-count');
         const inputRow = document.getElementById('regex-input-row');
-        if (!pattern || !isValidRegex(pattern)) {
+        const inputError = document.getElementById('input-error');
+        const isInvalid = pattern && !isValidRegex(pattern);
+        inputError.style.display = isInvalid ? '' : 'none';
+        inputRow.classList.toggle('has-error', !!isInvalid);
+        if (!pattern || isInvalid) {
             testBox.innerHTML = escapeHtml(c.testString);
             matchCountEl.textContent = '';
             matchCountEl.className = 'match-count';
@@ -374,6 +392,7 @@ const PyRex = (() => {
         }
 
         showView('view-result');
+        document.getElementById('result-banner').focus();
     }
 
     // ─── Event wiring ─────────────────────────────────────────────────────────
@@ -390,12 +409,16 @@ const PyRex = (() => {
             const modal = document.getElementById('modal-reset');
 
             if (e.key === 'Tab' && !modal.classList.contains('hidden')) {
-                const cancelBtn = document.getElementById('btn-reset-cancel');
-                const confirmBtn = document.getElementById('btn-reset-confirm');
+                const focusable = Array.from(modal.querySelectorAll(
+                    'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+                ));
+                if (focusable.length === 0) return;
+                e.preventDefault();
+                const index = focusable.indexOf(document.activeElement);
                 if (e.shiftKey) {
-                    if (document.activeElement === cancelBtn) { e.preventDefault(); confirmBtn.focus(); }
+                    focusable[(index <= 0 ? focusable.length : index) - 1].focus();
                 } else {
-                    if (document.activeElement === confirmBtn) { e.preventDefault(); cancelBtn.focus(); }
+                    focusable[(index + 1) % focusable.length].focus();
                 }
                 return;
             }
@@ -492,6 +515,7 @@ const PyRex = (() => {
             const hintBox = document.getElementById('hint-box');
             hintVisible = !hintVisible;
             hintBox.style.display = hintVisible ? '' : 'none';
+            document.getElementById('btn-hint').setAttribute('aria-expanded', hintVisible);
         });
 
         // Concept screen: Start button
@@ -538,11 +562,7 @@ const PyRex = (() => {
             document.getElementById('modal-reset').classList.add('hidden');
         });
         document.getElementById('btn-reset-confirm').addEventListener('click', async () => {
-            if (firebaseSync && firebaseSync.syncTimeout) {
-                clearTimeout(firebaseSync.syncTimeout);
-                firebaseSync.syncTimeout = null;
-                firebaseSync._pendingGetData = null;
-            }
+            if (firebaseSync) firebaseSync.cancelPendingSync();
             if (firebaseSync && firebaseSync.isSignedIn()) {
                 await firebaseSync.deleteAllData();
             }

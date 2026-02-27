@@ -8,6 +8,7 @@ class FirebaseSync {
         this.syncTimeout = null;
         this._cachedToken = null;
         this._pendingGetData = null;
+        this._tokenRefreshInterval = null;
     }
 
     init() {
@@ -28,8 +29,10 @@ class FirebaseSync {
             this.user = user;
             if (user) {
                 user.getIdToken().then(t => { this._cachedToken = t; }).catch(e => { console.warn('Token refresh failed:', e); });
+                this._startTokenRefresh();
             } else {
                 this._cachedToken = null;
+                this._stopTokenRefresh();
             }
             if (this.onAuthChangeCallback) {
                 this.onAuthChangeCallback(user);
@@ -98,6 +101,34 @@ class FirebaseSync {
         }
     }
 
+    _startTokenRefresh() {
+        this._stopTokenRefresh();
+        // Firebase tokens expire after 1h; refresh every 55 minutes to keep the
+        // cached token fresh for flushPendingSync() keepalive calls.
+        this._tokenRefreshInterval = setInterval(() => {
+            if (this.user) {
+                this.user.getIdToken(true)
+                    .then(t => { this._cachedToken = t; })
+                    .catch(e => { console.warn('Token refresh failed:', e); });
+            }
+        }, 55 * 60 * 1000);
+    }
+
+    _stopTokenRefresh() {
+        if (this._tokenRefreshInterval) {
+            clearInterval(this._tokenRefreshInterval);
+            this._tokenRefreshInterval = null;
+        }
+    }
+
+    cancelPendingSync() {
+        if (this.syncTimeout) {
+            clearTimeout(this.syncTimeout);
+            this.syncTimeout = null;
+        }
+        this._pendingGetData = null;
+    }
+
     scheduleSave(getDataFn) {
         if (!this.user) return;
         this._pendingGetData = getDataFn;
@@ -106,9 +137,6 @@ class FirebaseSync {
             this.syncTimeout = null;
             this._pendingGetData = null;
             const ok = await this.saveToCloud(getDataFn());
-            if (this.user) {
-                this.user.getIdToken().then(t => { this._cachedToken = t; }).catch(e => { console.warn('Token refresh failed:', e); });
-            }
             if (this.onSyncResult) this.onSyncResult(ok);
         }, 2000);
     }
