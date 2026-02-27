@@ -1,6 +1,6 @@
 # CLAUDE.md
 
-This file provides guidance to Claude Code when working with code in this repository.
+This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
 ## Quick Reference
 
@@ -76,6 +76,10 @@ Single-page app with view toggling (`active` class on `<section>` elements). All
 ```
 
 **Important**: In `solution`, write `\\d`, `\\b`, `\\w`, `\\s` etc. (double-backslash) so the JS string contains a literal backslash — the regex engine then interprets it correctly.
+
+## Mobile Focus Rule
+
+`app.js` exposes `isTouchDevice()` (`window.matchMedia('(pointer: coarse)')`). Any navigation-triggered `input.focus()` call must be guarded with `!isTouchDevice()` to prevent iOS Safari from auto-zooming when the user moves between challenges. Focus calls that are direct responses to user interaction (e.g. char picker insertion, empty-submit feedback) are exempt.
 
 ## Adding New Challenges
 
