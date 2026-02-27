@@ -266,8 +266,6 @@ const PyRex = (() => {
             input.readOnly = false;
             matchCount.textContent = '';
             matchCount.className = 'match-count';
-            setVisible(document.getElementById('input-error'), false);
-            inputRow.classList.remove('has-error');
             setVisible(document.getElementById('challenge-actions'), true);
             setVisible(document.getElementById('char-picker'), true);
             setVisible(document.getElementById('completed-banner'), false);
@@ -311,11 +309,7 @@ const PyRex = (() => {
         const pattern = document.getElementById('regex-input').value;
         const testBox = document.getElementById('test-string-box');
         const matchCountEl = document.getElementById('match-count');
-        const inputRow = document.getElementById('regex-input-row');
-        const inputError = document.getElementById('input-error');
         const isInvalid = pattern && !isValidRegex(pattern);
-        inputError.style.display = isInvalid ? '' : 'none';
-        inputRow.classList.toggle('has-error', !!isInvalid);
         if (!pattern || isInvalid) {
             testBox.innerHTML = escapeHtml(c.testString);
             matchCountEl.textContent = '';

@@ -386,10 +386,6 @@ body {
     border-color: var(--accent-color);
 }
 
-.regex-input-row.has-error {
-    border-color: var(--error-color);
-}
-
 .regex-input {
     flex: 1;
     background: none;
@@ -405,12 +401,6 @@ body {
 .regex-input::placeholder {
     color: #fff;
     opacity: 0.35;
-}
-
-.input-error {
-    font-size: 1.25rem;
-    color: var(--error-color);
-    margin-bottom: 14px;
 }
 
 .char-picker-wrap {
