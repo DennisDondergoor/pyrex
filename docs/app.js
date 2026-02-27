@@ -4,6 +4,10 @@
 const PyRex = (() => {
     'use strict';
 
+    // ─── Helpers ──────────────────────────────────────────────────────────────
+
+    const isTouchDevice = () => window.matchMedia('(pointer: coarse)').matches;
+
     // ─── State ────────────────────────────────────────────────────────────────
 
     let currentLevel = null;
@@ -257,7 +261,7 @@ const PyRex = (() => {
         }
 
         showView('view-challenge');
-        if (!isSolved) requestAnimationFrame(() => input.focus());
+        if (!isSolved && !isTouchDevice()) requestAnimationFrame(() => input.focus());
     }
 
     function showConceptScreen() {
@@ -522,7 +526,7 @@ const PyRex = (() => {
             input.value = lastPattern;
             input.setSelectionRange(lastPattern.length, lastPattern.length);
             updateHighlight();
-            requestAnimationFrame(() => input.focus());
+            if (!isTouchDevice()) requestAnimationFrame(() => input.focus());
         });
 
         // Reset progress
