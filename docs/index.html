@@ -85,42 +85,42 @@
                     placeholder="type your pattern"
                 >
             </div>
-            <div class="char-picker-wrap">
+            <div class="char-picker-wrap" id="char-picker-wrap">
             <div class="char-picker" id="char-picker">
-                <button class="char-btn" type="button" data-char=".">.</button>
-                <button class="char-btn" type="button" data-char="*">*</button>
-                <button class="char-btn" type="button" data-char="+">+</button>
-                <button class="char-btn" type="button" data-char="?">?</button>
-                <button class="char-btn" type="button" data-char="|">|</button>
-                <button class="char-btn" type="button" data-char="^">^</button>
-                <button class="char-btn" type="button" data-char="$">$</button>
-                <button class="char-btn" type="button" data-char="\">\</button>
-                <button class="char-btn" type="button" data-char="[">[</button>
-                <button class="char-btn" type="button" data-char="]">]</button>
-                <button class="char-btn" type="button" data-char="(">(</button>
-                <button class="char-btn" type="button" data-char=")">)</button>
-                <button class="char-btn" type="button" data-char="{">{</button>
-                <button class="char-btn" type="button" data-char="}">}</button>
-                <button class="char-btn" type="button" data-char="-">-</button>
-                <button class="char-btn char-btn-shorthand" type="button" data-char="*?">*?</button>
-                <button class="char-btn char-btn-shorthand" type="button" data-char="+?">+?</button>
-                <button class="char-btn char-btn-shorthand" type="button" data-char="??">??</button>
-                <button class="char-btn char-btn-shorthand" type="button" data-char="\1">\1</button>
-                <button class="char-btn char-btn-shorthand" type="button" data-char="\d">\d</button>
-                <button class="char-btn char-btn-shorthand" type="button" data-char="\w">\w</button>
-                <button class="char-btn char-btn-shorthand" type="button" data-char="\s">\s</button>
-                <button class="char-btn char-btn-shorthand" type="button" data-char="\b">\b</button>
-                <button class="char-btn char-btn-shorthand" type="button" data-char="\B">\B</button>
-                <button class="char-btn char-btn-shorthand" type="button" data-char="\D">\D</button>
-                <button class="char-btn char-btn-shorthand" type="button" data-char="\W">\W</button>
-                <button class="char-btn char-btn-shorthand" type="button" data-char="\S">\S</button>
-                <button class="char-btn char-btn-shorthand" type="button" data-char="(?:">(?:</button>
-                <button class="char-btn char-btn-shorthand" type="button" data-char="(?&lt;">(?&lt;</button>
-                <button class="char-btn char-btn-shorthand" type="button" data-char="(?=">(?=</button>
-                <button class="char-btn char-btn-shorthand" type="button" data-char="(?!">(?!</button>
-                <button class="char-btn char-btn-shorthand" type="button" data-char="(?&lt;=">(?&lt;=</button>
-                <button class="char-btn char-btn-shorthand" type="button" data-char="(?&lt;!">(?&lt;!</button>
-
+                <button class="char-btn" type="button" data-char="." data-since="2">.</button>
+                <button class="char-btn" type="button" data-char="\" data-since="2">\</button>
+                <button class="char-btn" type="button" data-char="[" data-since="3">[</button>
+                <button class="char-btn" type="button" data-char="]" data-since="3">]</button>
+                <button class="char-btn" type="button" data-char="-" data-since="3">-</button>
+                <button class="char-btn" type="button" data-char="{" data-since="4">{</button>
+                <button class="char-btn" type="button" data-char="}" data-since="4">}</button>
+                <button class="char-btn" type="button" data-char="(" data-since="4">(</button>
+                <button class="char-btn" type="button" data-char=")" data-since="4">)</button>
+                <button class="char-btn" type="button" data-char="^" data-since="3">^</button>
+                <button class="char-btn" type="button" data-char="$" data-since="5">$</button>
+                <button class="char-btn" type="button" data-char="+" data-since="4">+</button>
+                <button class="char-btn" type="button" data-char="*" data-since="4">*</button>
+                <button class="char-btn" type="button" data-char="?" data-since="4">?</button>
+                <button class="char-btn" type="button" data-char="|" data-since="8">|</button>
+                <button class="char-btn char-btn-shorthand" type="button" data-char="+?" data-since="4">+?</button>
+                <button class="char-btn char-btn-shorthand" type="button" data-char="*?" data-since="4">*?</button>
+                <button class="char-btn char-btn-shorthand" type="button" data-char="\d" data-since="6">\d</button>
+                <button class="char-btn char-btn-shorthand" type="button" data-char="\w" data-since="6">\w</button>
+                <button class="char-btn char-btn-shorthand" type="button" data-char="\s" data-since="6">\s</button>
+                <button class="char-btn char-btn-shorthand" type="button" data-char="\D" data-since="6">\D</button>
+                <button class="char-btn char-btn-shorthand" type="button" data-char="\W" data-since="6">\W</button>
+                <button class="char-btn char-btn-shorthand" type="button" data-char="\S" data-since="6">\S</button>
+                <button class="char-btn char-btn-shorthand" type="button" data-char="\b" data-since="5">\b</button>
+                <button class="char-btn char-btn-shorthand" type="button" data-char="\B" data-since="5">\B</button>
+                <button class="char-btn char-btn-shorthand" type="button" data-char="\1" data-since="7">\1</button>
+                <button class="char-btn char-btn-shorthand" type="button" data-char="\2" data-since="7">\2</button>
+                <button class="char-btn char-btn-shorthand" type="button" data-char="(?:" data-since="4">(?:</button>
+                <button class="char-btn char-btn-shorthand" type="button" data-char="(?&lt;" data-since="9">(?&lt;</button>
+                <button class="char-btn char-btn-shorthand" type="button" data-char="\k&lt;" data-since="9">\k&lt;</button>
+                <button class="char-btn char-btn-shorthand" type="button" data-char="(?=" data-since="10">(?=</button>
+                <button class="char-btn char-btn-shorthand" type="button" data-char="(?!" data-since="10">(?!</button>
+                <button class="char-btn char-btn-shorthand" type="button" data-char="(?&lt;=" data-since="10">(?&lt;=</button>
+                <button class="char-btn char-btn-shorthand" type="button" data-char="(?&lt;!" data-since="10">(?&lt;!</button>
             </div>
             </div>
 
@@ -166,7 +166,7 @@
         <div id="modal-reset" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="modal-reset-heading">
             <div class="modal-content">
                 <h2 id="modal-reset-heading">Reset all progress?</h2>
-                <p>This will clear all your completed challenges. This cannot be undone.</p>
+                <p id="modal-reset-body">This will clear all your completed challenges. This cannot be undone.</p>
                 <div class="modal-actions">
                     <button class="btn btn-secondary" id="btn-reset-cancel">Cancel</button>
                     <button class="btn btn-danger" id="btn-reset-confirm">Reset</button>

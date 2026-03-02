@@ -195,6 +195,7 @@ body {
 }
 
 .level-card {
+    position: relative;
     background: var(--card-bg);
     border: 1px solid var(--border-color);
     border-radius: 10px;
@@ -230,6 +231,30 @@ body {
 .level-card.coming-soon:hover {
     border-color: var(--border-color);
     background: var(--card-bg);
+}
+
+.btn-level-reset {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: none;
+    border: none;
+    padding: 4px;
+    border-radius: 4px;
+    color: var(--text-muted, #666);
+    opacity: 0;
+    cursor: pointer;
+    transition: opacity 0.15s, color 0.15s;
+    line-height: 0;
+}
+
+.level-card:hover .btn-level-reset {
+    opacity: 0.5;
+}
+
+.btn-level-reset:hover {
+    opacity: 1 !important;
+    color: var(--error-color);
 }
 
 .level-number {
@@ -404,36 +429,16 @@ body {
 }
 
 .char-picker-wrap {
-    position: relative;
     margin-bottom: 10px;
-}
-
-.char-picker-wrap::after {
-    content: '';
-    position: absolute;
-    right: 0;
-    top: 0;
-    bottom: 0;
-    width: 36px;
-    background: linear-gradient(to right, transparent, var(--bg-color));
-    pointer-events: none;
 }
 
 .char-picker {
     display: flex;
+    flex-wrap: wrap;
     gap: 5px;
-    overflow-x: auto;
-    -webkit-overflow-scrolling: touch;
-    padding-bottom: 4px;
-    scrollbar-width: none;
-}
-
-.char-picker::-webkit-scrollbar {
-    display: none;
 }
 
 .char-btn {
-    flex-shrink: 0;
     background: var(--card-bg);
     border: 1px solid var(--border-color);
     border-radius: 6px;

@@ -18,6 +18,7 @@ const PyRex = (() => {
     let progress = loadProgress();
     let activeView = 'view-home';
     let firebaseSync = null;
+    let pendingResetAction = null;
 
     // ─── Level definitions ────────────────────────────────────────────────────
 
@@ -58,10 +59,36 @@ const PyRex = (() => {
         localStorage.removeItem('pyrex_progress');
     }
 
+    function clearLevelProgress(levelNum) {
+        CHALLENGES.filter(c => c.level === levelNum).forEach(c => delete progress[c.id]);
+        localStorage.setItem('pyrex_progress', JSON.stringify(progress));
+        syncToCloud();
+    }
+
+    function openResetModal(heading, body, action) {
+        document.getElementById('modal-reset-heading').textContent = heading;
+        document.getElementById('modal-reset-body').textContent = body;
+        pendingResetAction = action;
+        document.getElementById('modal-reset').classList.remove('hidden');
+        document.getElementById('btn-reset-cancel').focus();
+    }
+
     // ─── DOM helpers ──────────────────────────────────────────────────────────
 
     function setVisible(el, show) {
         el.style.display = show ? '' : 'none';
+    }
+
+    function updateCharPicker() {
+        const wrap = document.getElementById('char-picker-wrap');
+        const picker = document.getElementById('char-picker');
+        let anyVisible = false;
+        picker.querySelectorAll('.char-btn').forEach(btn => {
+            const show = currentLevel >= parseInt(btn.dataset.since, 10);
+            btn.style.display = show ? '' : 'none';
+            if (show) anyVisible = true;
+        });
+        setVisible(wrap, anyVisible);
     }
 
     // ─── Regex utilities ──────────────────────────────────────────────────────
@@ -187,6 +214,27 @@ const PyRex = (() => {
                         startLevel(level.num);
                     }
                 });
+
+                if (done > 0) {
+                    const resetBtn = document.createElement('button');
+                    resetBtn.className = 'btn-level-reset';
+                    resetBtn.type = 'button';
+                    resetBtn.title = `Reset Level ${level.num} progress`;
+                    resetBtn.setAttribute('aria-label', `Reset Level ${level.num} progress`);
+                    resetBtn.innerHTML = `<svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+                        <path d="M2 8a6 6 0 1 0 1.4-3.8" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+                        <path d="M2 3.5v4h4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>`;
+                    resetBtn.addEventListener('click', e => {
+                        e.stopPropagation();
+                        openResetModal(
+                            `Reset Level ${level.num}?`,
+                            `This will clear your progress for all ${level.title} challenges. This cannot be undone.`,
+                            () => clearLevelProgress(level.num)
+                        );
+                    });
+                    card.appendChild(resetBtn);
+                }
             }
 
             grid.appendChild(card);
@@ -258,7 +306,7 @@ const PyRex = (() => {
             matchCount.textContent = matches ? `${matches.length} ${matches.length === 1 ? 'match' : 'matches'}` : '';
             matchCount.className = 'match-count has-matches';
             setVisible(document.getElementById('challenge-actions'), false);
-            setVisible(document.getElementById('char-picker'), false);
+            setVisible(document.getElementById('char-picker-wrap'), false);
             setVisible(document.getElementById('completed-banner'), true);
         } else {
             testBox.innerHTML = escapeHtml(c.testString);
@@ -267,7 +315,7 @@ const PyRex = (() => {
             matchCount.textContent = '';
             matchCount.className = 'match-count';
             setVisible(document.getElementById('challenge-actions'), true);
-            setVisible(document.getElementById('char-picker'), true);
+            updateCharPicker();
             setVisible(document.getElementById('completed-banner'), false);
         }
 
@@ -294,7 +342,7 @@ const PyRex = (() => {
         setVisible(document.getElementById('test-string-box'), false);
         setVisible(document.getElementById('match-count'), false);
         setVisible(document.getElementById('regex-input-row'), false);
-        setVisible(document.getElementById('char-picker'), false);
+        setVisible(document.getElementById('char-picker-wrap'), false);
         setVisible(document.getElementById('hint-box'), false);
         setVisible(document.getElementById('challenge-actions'), false);
         setVisible(document.getElementById('completed-banner'), false);
@@ -549,18 +597,25 @@ const PyRex = (() => {
 
         // Reset progress
         document.getElementById('btn-reset-progress').addEventListener('click', () => {
-            document.getElementById('modal-reset').classList.remove('hidden');
-            document.getElementById('btn-reset-cancel').focus();
+            openResetModal(
+                'Reset all progress?',
+                'This will clear all your completed challenges. This cannot be undone.',
+                async () => {
+                    if (firebaseSync) firebaseSync.cancelPendingSync();
+                    if (firebaseSync && firebaseSync.isSignedIn()) {
+                        await firebaseSync.deleteAllData();
+                    }
+                    clearProgress();
+                }
+            );
         });
         document.getElementById('btn-reset-cancel').addEventListener('click', () => {
             document.getElementById('modal-reset').classList.add('hidden');
+            pendingResetAction = null;
         });
         document.getElementById('btn-reset-confirm').addEventListener('click', async () => {
-            if (firebaseSync) firebaseSync.cancelPendingSync();
-            if (firebaseSync && firebaseSync.isSignedIn()) {
-                await firebaseSync.deleteAllData();
-            }
-            clearProgress();
+            if (pendingResetAction) await pendingResetAction();
+            pendingResetAction = null;
             document.getElementById('modal-reset').classList.add('hidden');
             renderHome();
         });

@@ -2,7 +2,7 @@
 
 A structured, interactive course for Python programmers learning regular expressions from scratch.
 
-**Live app**: coming soon
+**Live app**: https://dennisdondergoor.github.io/pyrex/
 **Local dev**: `python3 -m http.server 8002 -d docs` → http://localhost:8002
 
 ---
@@ -11,23 +11,26 @@ A structured, interactive course for Python programmers learning regular express
 
 PyRex teaches regex through hands-on challenges. Each level introduces a new concept, with reinforcement exercises and consolidation challenges that combine skills from earlier levels.
 
-No account required. Progress is saved locally in your browser.
+Sign in with GitHub to sync progress across devices. No account required to play — progress is saved locally in your browser.
 
 ## Curriculum
 
 | Level | Topic | Challenges |
 |-------|-------|------------|
-| 1 | Literal Matches | 4 |
-| 2 | The Dot | 6 |
-| 3 | Character Classes | 7 |
-| 4 | Quantifiers | 11 |
-| 5 | Anchors | 8 |
-| 6 | Shorthand Classes | 8 |
-| 7–10 | Coming soon | — |
+| 1 | Literal Matches | 7 |
+| 2 | The Dot | 8 |
+| 3 | Character Classes | 10 |
+| 4 | Quantifiers | 16 |
+| 5 | Anchors | 11 |
+| 6 | Shorthand Classes | 11 |
+| 7 | Groups | 12 |
+| 8 | Alternation | 10 |
+| 9 | Named Groups | 8 |
+| 10 | Lookaheads | 11 |
 
 ## Tech
 
 - Vanilla JavaScript, HTML, CSS — no build tools
 - Deployed from `docs/` via GitHub Pages
-- No backend or authentication
+- Optional GitHub OAuth via Firebase — Firestore cloud sync
 - See `CLAUDE.md` for architecture details

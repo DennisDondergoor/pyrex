@@ -22,7 +22,7 @@ No build step, no package manager, no tests. Static site served from `docs/`.
 
 Single-page app with view toggling (`active` class on `<section>` elements). All source in `docs/`:
 
-- **index.html** — Views: home (level grid), challenge, result. Confirmation modal for reset.
+- **index.html** — Views: home (level grid), challenge, result. Shared confirmation modal (`#modal-reset`) for both reset-all and per-level reset — heading and body are set dynamically before opening.
 - **style.css** — All styles. Same CSS variables as PyLens: `#000` bg, `#111` cards, `#333` borders, `#4a9eff` accent, Source Code Pro font.
 - **challenges.js** — `LEVEL_CONCEPTS` object (keyed 1–10, multi-paragraph strings shown on the concept intro screen). `CHALLENGES` array (global). Each object: `id`, `level`, `title`, `instruction`, `testString`, `solution` (regex pattern string), `explanation`, `hint`.
 - **app.js** — IIFE module. Handles view routing, regex matching, live highlights, progress storage, Firebase auth/sync.
@@ -60,6 +60,31 @@ Single-page app with view toggling (`active` class on `<section>` elements). All
 
 **Firestore**: `users/{uid}` document, field `progress` with the same shape. Merge on sign-in: `solved: local || cloud`, `attempts: max(local, cloud)`.
 
+## Character Picker
+
+Each `.char-btn` in `#char-picker` has a `data-since="N"` attribute indicating the level at which that character is first taught. `updateCharPicker()` (called in `showChallenge()` for unsolved challenges) shows only buttons where `currentLevel >= data-since`, hiding the rest. If no buttons are visible (Level 1), the entire `#char-picker-wrap` is hidden.
+
+The picker uses `flex-wrap: wrap` so all visible buttons appear in rows — no horizontal scrolling.
+
+| Level introduced | Characters |
+|-----------------|-----------|
+| 2 | `.` `\` |
+| 3 | `[` `]` `-` `^` |
+| 4 | `+` `*` `?` `{` `}` `(` `)` `(?:` `+?` `*?` |
+| 5 | `$` `\b` `\B` |
+| 6 | `\d` `\w` `\s` `\D` `\W` `\S` |
+| 7 | `\1` `\2` |
+| 8 | `\|` |
+| 9 | `(?<` `\k<` |
+| 10 | `(?=` `(?!` `(?<=` `(?<!` |
+
+## Reset Progress
+
+`openResetModal(heading, body, action)` populates and opens `#modal-reset` with the given text and stores the async callback in `pendingResetAction`. The confirm button always calls `pendingResetAction()` then re-renders home.
+
+- **Reset all**: clears everything via `clearProgress()`, also calls `firebaseSync.deleteAllData()` when signed in.
+- **Reset level**: a `.btn-level-reset` icon button is appended to any level card with `done > 0`. Clicking it (stops propagation) calls `openResetModal` with level-specific text and `clearLevelProgress(levelNum)` as the action. `clearLevelProgress` deletes only that level's challenge entries from `progress`, saves to localStorage, and calls `syncToCloud()`.
+
 ## Challenge Data Format
 
 ```js
@@ -92,15 +117,15 @@ Single-page app with view toggling (`active` class on `<section>` elements). All
 
 ## Levels
 
-| Level | Topic |
-|-------|-------|
-| 1 | Literal Matches |
-| 2 | The Dot |
-| 3 | Character Classes |
-| 4 | Quantifiers |
-| 5 | Anchors |
-| 6 | Shorthand Classes |
-| 7 | Groups |
-| 8 | Alternation |
-| 9 | Named Groups |
-| 10 | Lookaheads |
+| Level | Topic | Challenges |
+|-------|-------|------------|
+| 1 | Literal Matches | 7 |
+| 2 | The Dot | 8 |
+| 3 | Character Classes | 10 |
+| 4 | Quantifiers | 16 |
+| 5 | Anchors | 11 |
+| 6 | Shorthand Classes | 11 |
+| 7 | Groups | 12 |
+| 8 | Alternation | 10 |
+| 9 | Named Groups | 8 |
+| 10 | Lookaheads | 11 |
