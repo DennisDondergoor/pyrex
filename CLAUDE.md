@@ -117,15 +117,15 @@ The picker uses `flex-wrap: wrap` so all visible buttons appear in rows — no h
 
 ## Levels
 
-| Level | Topic | Challenges |
-|-------|-------|------------|
-| 1 | Literal Matches | 7 |
-| 2 | The Dot | 8 |
-| 3 | Character Classes | 10 |
-| 4 | Quantifiers | 16 |
-| 5 | Anchors | 11 |
-| 6 | Shorthand Classes | 11 |
-| 7 | Groups | 12 |
-| 8 | Alternation | 10 |
-| 9 | Named Groups | 8 |
-| 10 | Lookaheads | 11 |
+| Level | Topic |
+|-------|-------|
+| 1 | Literal Matches |
+| 2 | The Dot |
+| 3 | Character Classes |
+| 4 | Quantifiers |
+| 5 | Anchors |
+| 6 | Shorthand Classes |
+| 7 | Groups |
+| 8 | Alternation |
+| 9 | Named Groups |
+| 10 | Lookaheads |
